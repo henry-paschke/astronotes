@@ -1,3 +1,5 @@
 backend/.venv/*
 *.py[cod]
 .vscode/
+backend/.env
+frontend/.env.local

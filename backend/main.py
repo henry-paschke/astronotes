@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from controllers.mindmap import mindmap_router
 from controllers.user import user_router
 from controllers.transcript import transcript_router
+from controllers.dashboard import dashboard_router
 
 app = FastAPI(title="AstroNotes API", version="1.0.0")
 
@@ -18,3 +19,4 @@ app.add_middleware(
 app.include_router(mindmap_router)
 app.include_router(user_router)
 app.include_router(transcript_router)
+app.include_router(dashboard_router)
