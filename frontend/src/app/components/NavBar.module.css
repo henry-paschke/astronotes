@@ -1,0 +1,114 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: rgba(2, 11, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navLogoMark {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.navLogoText {
+  font-family: var(--font-cinzel), serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold-light);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.navLink {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+  padding: 8px 14px;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--gold-light);
+}
+
+.navCta {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--gold);
+  padding: 9px 20px;
+  border-radius: 2px;
+  transition: background 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+
+.navCta:hover {
+  background: var(--gold-light);
+  box-shadow: 0 0 20px rgba(196, 163, 90, 0.4);
+}
+
+.navUser {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 8px 14px;
+}
+
+.navUserDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.navSignOut {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.navSignOut:hover {
+  color: var(--gold-light);
+}

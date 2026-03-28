@@ -7,3 +7,6 @@ spacy
 faiss-cpu
 anthropic
 numpy
+python-jose[cryptography]
+bcrypt
+python-multipart

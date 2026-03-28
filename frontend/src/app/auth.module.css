@@ -1,0 +1,261 @@
+/* ── Shared auth page styles (login + signup) ─────────────────────────────── */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg-deep);
+  font-family: var(--font-crimson), Georgia, serif;
+  color: var(--parchment);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navigation ───────────────────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: rgba(2, 11, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navLogoMark { width: 28px; height: 28px; flex-shrink: 0; }
+
+.navLogoText {
+  font-family: var(--font-cinzel), serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold-light);
+}
+
+/* ── Star field canvas ────────────────────────────────────────────────────── */
+.starField {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Centered layout ──────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cardGlow {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
+
+.cardInner {
+  padding: 44px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Astrolabe mini mark ──────────────────────────────────────────────────── */
+.astrolabeMark {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 12px rgba(196, 163, 90, 0.25));
+}
+
+/* ── Headings ─────────────────────────────────────────────────────────────── */
+.rule {
+  width: 80px;
+  height: 10px;
+  margin-bottom: 14px;
+}
+
+.cardTitle {
+  font-family: var(--font-cinzel), serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--starlight);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.cardSub {
+  font-size: 15px;
+  color: var(--parchment-dim);
+  opacity: 0.55;
+  margin-bottom: 36px;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────── */
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.75;
+}
+
+.input {
+  background: rgba(196, 163, 90, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 12px 14px;
+  font-family: var(--font-crimson), serif;
+  font-size: 16px;
+  color: var(--parchment);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.input::placeholder {
+  color: var(--parchment-dim);
+  opacity: 0.3;
+}
+
+.input:focus {
+  border-color: var(--border-bright);
+  background: rgba(196, 163, 90, 0.07);
+}
+
+/* ── Submit button ────────────────────────────────────────────────────────── */
+.submitBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--gold);
+  border: none;
+  padding: 15px 24px;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--gold-light);
+  box-shadow: 0 0 28px rgba(196, 163, 90, 0.45);
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Error / success messages ─────────────────────────────────────────────── */
+.error {
+  font-size: 13px;
+  color: #c46a5a;
+  border: 1px solid rgba(196, 90, 90, 0.3);
+  background: rgba(196, 90, 90, 0.06);
+  border-radius: 2px;
+  padding: 10px 14px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.success {
+  font-size: 13px;
+  color: var(--gold-light);
+  border: 1px solid var(--border-bright);
+  background: rgba(196, 163, 90, 0.06);
+  border-radius: 2px;
+  padding: 10px 14px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* ── Footer link ──────────────────────────────────────────────────────────── */
+.cardFooter {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--parchment-dim);
+  opacity: 0.55;
+  text-align: center;
+}
+
+.cardFooter a {
+  color: var(--gold);
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.cardFooter a:hover {
+  color: var(--gold-light);
+}
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 4px 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .nav { padding: 0 20px; }
+  .cardInner { padding: 36px 24px 32px; }
+}
