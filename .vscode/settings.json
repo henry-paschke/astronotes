@@ -1,3 +1,9 @@
 {
-  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"]
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}",
+    ".vscode{,/**}",
+    "public{,/**}"
+  ],
+  "appService.defaultWebAppToDeploy": "/subscriptions/fefbd35b-c178-4e99-b0b4-b652ac46244b/resourceGroups/KSU-rg/providers/Microsoft.Web/sites/KSU-frontend",
+  "appService.deploySubpath": "frontend"
 }
