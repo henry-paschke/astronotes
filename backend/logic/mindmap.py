@@ -119,6 +119,15 @@ class GraphState:
         self.subtopic_parent = {}
         self.cleaned = {}
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["nlp"]  # ✅ exclude spaCy model — ~50MB gone
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.nlp = spacy.load("en_core_web_md")  # reload on deserialize
+
     def _next_color(self):
         c = TOPIC_COLORS[self._color_idx % len(TOPIC_COLORS)]
         self._color_idx += 1

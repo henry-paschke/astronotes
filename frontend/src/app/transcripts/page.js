@@ -200,224 +200,236 @@ export default function TranscriptsPage() {
 
   return (
     <AuthGuard>
-    <div className={styles.page}>
-      {/* ── Navigation ── */}
-      <NavBar />
+      <div className={styles.page}>
+        {/* ── Navigation ── */}
+        <NavBar />
 
-      {/* ── Page header ── */}
-      <header className={styles.pageHeader}>
-        <div className={styles.pageHeaderInner}>
-          <div className={styles.headerText}>
-            <svg
-              viewBox="0 0 120 12"
-              className={styles.sectionRule}
-              aria-hidden="true"
+        {/* ── Page header ── */}
+        <header className={styles.pageHeader}>
+          <div className={styles.pageHeaderInner}>
+            <div className={styles.headerText}>
+              <svg
+                viewBox="0 0 120 12"
+                className={styles.sectionRule}
+                aria-hidden="true"
+              >
+                <line
+                  x1="0"
+                  y1="6"
+                  x2="48"
+                  y2="6"
+                  stroke="#c4a35a"
+                  strokeWidth="0.8"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="55"
+                  cy="6"
+                  r="3"
+                  fill="none"
+                  stroke="#c4a35a"
+                  strokeWidth="1"
+                  opacity="0.8"
+                />
+                <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
+                <circle
+                  cx="65"
+                  cy="6"
+                  r="3"
+                  fill="none"
+                  stroke="#c4a35a"
+                  strokeWidth="1"
+                  opacity="0.8"
+                />
+                <line
+                  x1="72"
+                  y1="6"
+                  x2="120"
+                  y2="6"
+                  stroke="#c4a35a"
+                  strokeWidth="0.8"
+                  opacity="0.5"
+                />
+              </svg>
+              <h1 className={styles.pageTitle}>Transcripts</h1>
+              <p className={styles.pageSubtitle}>
+                {TRANSCRIPTS.length} lectures charted &mdash;&nbsp;
+                {counts.complete} complete,&nbsp;
+                {counts.processing} processing,&nbsp;
+                {counts.draft} in draft
+              </p>
+            </div>
+            <div
+              className={styles.newBtn}
+              onClick={async () => {
+                await createTranscript();
+              }}
             >
-              <line
-                x1="0"
-                y1="6"
-                x2="48"
-                y2="6"
-                stroke="#c4a35a"
-                strokeWidth="0.8"
-                opacity="0.5"
-              />
-              <circle
-                cx="55"
-                cy="6"
-                r="3"
-                fill="none"
-                stroke="#c4a35a"
-                strokeWidth="1"
-                opacity="0.8"
-              />
-              <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
-              <circle
-                cx="65"
-                cy="6"
-                r="3"
-                fill="none"
-                stroke="#c4a35a"
-                strokeWidth="1"
-                opacity="0.8"
-              />
-              <line
-                x1="72"
-                y1="6"
-                x2="120"
-                y2="6"
-                stroke="#c4a35a"
-                strokeWidth="0.8"
-                opacity="0.5"
-              />
-            </svg>
-            <h1 className={styles.pageTitle}>Transcripts</h1>
-            <p className={styles.pageSubtitle}>
-              {TRANSCRIPTS.length} lectures charted &mdash;&nbsp;
-              {counts.complete} complete,&nbsp;
-              {counts.processing} processing,&nbsp;
-              {counts.draft} in draft
-            </p>
+              <svg
+                viewBox="0 0 20 20"
+                width="16"
+                height="16"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                />
+                <line
+                  x1="10"
+                  y1="6"
+                  x2="10"
+                  y2="14"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="6"
+                  y1="10"
+                  x2="14"
+                  y2="10"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              </svg>
+              New Transcript
+            </div>
           </div>
-          <div
-            className={styles.newBtn}
-            onClick={async () => {
-              await createTranscript();
-            }}
-          >
-            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-              <circle
-                cx="10"
-                cy="10"
-                r="8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.4"
+        </header>
+
+        {/* ── Filter bar ── */}
+        <div className={styles.filterBar}>
+          <div className={styles.filterBarInner}>
+            <div className={styles.filterTabs}>
+              <button
+                className={`${styles.filterTab} ${styles.filterTabActive}`}
+              >
+                All
+              </button>
+              <button className={styles.filterTab}>
+                <span
+                  className={styles.filterDot}
+                  style={{ background: "#c4a35a" }}
+                />
+                Complete{" "}
+                <span className={styles.filterCount}>{counts.complete}</span>
+              </button>
+              <button className={styles.filterTab}>
+                <span
+                  className={styles.filterDot}
+                  style={{ background: "#4a7fcb" }}
+                />
+                Processing{" "}
+                <span className={styles.filterCount}>{counts.processing}</span>
+              </button>
+              <button className={styles.filterTab}>
+                <span
+                  className={styles.filterDot}
+                  style={{ background: "#6b7a95" }}
+                />
+                Draft <span className={styles.filterCount}>{counts.draft}</span>
+              </button>
+            </div>
+            <div className={styles.searchWrap}>
+              <svg
+                viewBox="0 0 16 16"
+                width="13"
+                height="13"
+                className={styles.searchIcon}
+                aria-hidden="true"
+              >
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="5"
+                  fill="none"
+                  stroke="#c4a35a"
+                  strokeWidth="1.2"
+                  opacity="0.6"
+                />
+                <line
+                  x1="10.5"
+                  y1="10.5"
+                  x2="14.5"
+                  y2="14.5"
+                  stroke="#c4a35a"
+                  strokeWidth="1.2"
+                  opacity="0.6"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search transcripts..."
+                className={styles.searchInput}
+                readOnly
               />
-              <line
-                x1="10"
-                y1="6"
-                x2="10"
-                y2="14"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-              <line
-                x1="6"
-                y1="10"
-                x2="14"
-                y2="10"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
-            New Transcript
+            </div>
           </div>
         </div>
-      </header>
 
-      {/* ── Filter bar ── */}
-      <div className={styles.filterBar}>
-        <div className={styles.filterBarInner}>
-          <div className={styles.filterTabs}>
-            <button className={`${styles.filterTab} ${styles.filterTabActive}`}>
-              All
-            </button>
-            <button className={styles.filterTab}>
-              <span
-                className={styles.filterDot}
-                style={{ background: "#c4a35a" }}
-              />
-              Complete{" "}
-              <span className={styles.filterCount}>{counts.complete}</span>
-            </button>
-            <button className={styles.filterTab}>
-              <span
-                className={styles.filterDot}
-                style={{ background: "#4a7fcb" }}
-              />
-              Processing{" "}
-              <span className={styles.filterCount}>{counts.processing}</span>
-            </button>
-            <button className={styles.filterTab}>
-              <span
-                className={styles.filterDot}
-                style={{ background: "#6b7a95" }}
-              />
-              Draft <span className={styles.filterCount}>{counts.draft}</span>
-            </button>
+        {/* ── Transcript list ── */}
+        <main className={styles.main}>
+          <div className={styles.list}>
+            {TRANSCRIPTS.map((t) => (
+              <TranscriptCard key={t.id} t={t} />
+            ))}
           </div>
-          <div className={styles.searchWrap}>
-            <svg
-              viewBox="0 0 16 16"
-              width="13"
-              height="13"
-              className={styles.searchIcon}
-              aria-hidden="true"
-            >
-              <circle
-                cx="6.5"
-                cy="6.5"
-                r="5"
-                fill="none"
-                stroke="#c4a35a"
-                strokeWidth="1.2"
-                opacity="0.6"
-              />
-              <line
-                x1="10.5"
-                y1="10.5"
-                x2="14.5"
-                y2="14.5"
-                stroke="#c4a35a"
-                strokeWidth="1.2"
-                opacity="0.6"
-                strokeLinecap="round"
-              />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search transcripts..."
-              className={styles.searchInput}
-              readOnly
-            />
+        </main>
+
+        {/* ── Footer ── */}
+        <footer className={styles.footer}>
+          <div className={styles.footerInner}>
+            <div className={styles.footerBrand}>
+              <svg
+                viewBox="0 0 20 20"
+                width="16"
+                height="16"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="8.5"
+                  fill="none"
+                  stroke="#c4a35a"
+                  strokeWidth="1"
+                  opacity="0.6"
+                />
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="4.5"
+                  fill="none"
+                  stroke="#c4a35a"
+                  strokeWidth="0.6"
+                  opacity="0.4"
+                />
+                <circle cx="10" cy="10" r="1.5" fill="#c4a35a" opacity="0.7" />
+              </svg>
+              <span className={styles.footerBrandName}>AstroNotes</span>
+            </div>
+            <ul className={styles.footerLinks}>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <a href="#">About</a>
+              </li>
+              <li>
+                <a href="#">Privacy</a>
+              </li>
+            </ul>
+            <p className={styles.footerCopy}>&copy; 2026 AstroNotes</p>
           </div>
-        </div>
+        </footer>
       </div>
-
-      {/* ── Transcript list ── */}
-      <main className={styles.main}>
-        <div className={styles.list}>
-          {TRANSCRIPTS.map((t) => (
-            <TranscriptCard key={t.id} t={t} />
-          ))}
-        </div>
-      </main>
-
-      {/* ── Footer ── */}
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <div className={styles.footerBrand}>
-            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-              <circle
-                cx="10"
-                cy="10"
-                r="8.5"
-                fill="none"
-                stroke="#c4a35a"
-                strokeWidth="1"
-                opacity="0.6"
-              />
-              <circle
-                cx="10"
-                cy="10"
-                r="4.5"
-                fill="none"
-                stroke="#c4a35a"
-                strokeWidth="0.6"
-                opacity="0.4"
-              />
-              <circle cx="10" cy="10" r="1.5" fill="#c4a35a" opacity="0.7" />
-            </svg>
-            <span className={styles.footerBrandName}>AstroNotes</span>
-          </div>
-          <ul className={styles.footerLinks}>
-            <li>
-              <Link href="/">Home</Link>
-            </li>
-            <li>
-              <a href="#">About</a>
-            </li>
-            <li>
-              <a href="#">Privacy</a>
-            </li>
-          </ul>
-          <p className={styles.footerCopy}>&copy; 2026 AstroNotes</p>
-        </div>
-      </footer>
-    </div>
     </AuthGuard>
   );
 }
