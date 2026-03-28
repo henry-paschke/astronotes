@@ -1,4 +1,11 @@
-const API = "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+export async function getMe(token) {
+  const res = await fetch(`${API}/api/users/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.ok ? res.json() : null;
+}
 
 export async function patchMe(payload) {
   const token = localStorage.getItem("astronotes_token");

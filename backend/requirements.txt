@@ -10,6 +10,7 @@ numpy
 python-jose[cryptography]
 bcrypt
 python-multipart
+python-dotenv
 debugpy
 redis
 

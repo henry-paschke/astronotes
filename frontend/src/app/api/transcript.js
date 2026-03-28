@@ -1,18 +1,52 @@
-export async function createTranscript() {
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+function authHeaders() {
   const token = localStorage.getItem("astronotes_token");
-  const response = await fetch("http://127.0.0.1:8000/api/create-transcript", {
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function createTranscript() {
+  const res = await fetch(`${API}/api/create-transcript`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify({}),
   });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    console.log(err);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || "Failed to create transcript");
   }
-  return response.json();
+  return res.json();
+}
+
+export async function listTranscripts() {
+  const res = await fetch(`${API}/api/transcripts`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`Failed to load transcripts (${res.status})`);
+  return res.json();
+}
+
+export async function listClasses() {
+  const res = await fetch(`${API}/api/transcripts/classes`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`Failed to load classes (${res.status})`);
+  return res.json();
+}
+
+export async function getTranscript(id) {
+  const res = await fetch(`${API}/api/get-transcript?id=${id}`, { headers: authHeaders() });
+  if (res.status === 403) throw new Error("You do not have access to this transcript.");
+  if (res.status === 404) throw new Error("Transcript not found.");
+  if (!res.ok) throw new Error(`Unexpected error (${res.status})`);
+  return res.json();
+}
+
+export async function updateTranscript(id, body) {
+  const res = await fetch(`${API}/api/transcripts/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.detail || "Save failed.");
+  }
+  return res.json();
 }

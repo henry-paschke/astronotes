@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './NavBar.module.css';
-
-const API = 'http://localhost:8000';
+import { getMe } from '../api/account';
 
 export default function NavBar({ showFeatureLinks = false }) {
   const router = useRouter();
@@ -22,8 +21,7 @@ export default function NavBar({ showFeatureLinks = false }) {
       }
       return;
     }
-    fetch(`${API}/api/users/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => (r.ok ? r.json() : null))
+    getMe(token)
       .then((data) => {
         if (data?.username) {
           setUsername(data.username);

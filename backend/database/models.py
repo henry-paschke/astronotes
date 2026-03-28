@@ -17,3 +17,8 @@ class Transcript(SQLModel, table=True):
     created_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional["User"] = Relationship(back_populates="transcripts")
+    name: str = Field(
+        default_factory=lambda: f"Unnamed Lecture {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    ai_summary: str = Field(default="No summary created yet")
+    class_name: Optional[str] = Field()

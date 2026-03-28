@@ -371,17 +371,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!id) return;
-    const token = localStorage.getItem("astronotes_token");
-    fetch(`${API}/api/get-transcript?id=${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async (r) => {
-        if (r.status === 403)
-          throw new Error("You do not have access to this transcript.");
-        if (r.status === 404) throw new Error("Transcript not found.");
-        if (!r.ok) throw new Error(`Unexpected error (${r.status})`);
-        return r.json();
-      })
+    getTranscript(id)
       .then((data) => setTranscript(data))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
