@@ -11,5 +11,6 @@ python-jose[cryptography]
 bcrypt
 python-multipart
 debugpy
+redis
 
 # python3 -m spacy download en_core_web_md
