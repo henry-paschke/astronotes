@@ -3,3 +3,7 @@ sqlmodel
 psycopg[binary]
 uvicorn
 psycopg2
+spacy
+faiss-cpu
+anthropic
+numpy
