@@ -1,117 +1,45 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { createTranscript } from "../api/transcript";
 import NavBar from "../components/NavBar";
 import AuthGuard from "../components/AuthGuard";
 
-// ─── Pseudo-random (same helper as landing page) ──────────────────────────────
+const API = "http://localhost:8000";
+
+// ─── Deterministic pseudo-random for waveform bars ────────────────────────────
 function pr(seed) {
   const x = Math.sin(seed + 1) * 10000;
   return x - Math.floor(x);
 }
 
-// ─── Dummy transcript data ─────────────────────────────────────────────────────
-const TRANSCRIPTS = [
-  {
-    id: 1,
-    title: "Introduction to Quantum Mechanics",
-    course: "PHYS 301",
-    date: "2026-03-24",
-    duration: "1h 12m",
-    words: 8420,
-    status: "complete",
-    excerpt:
-      "The wave function ψ describes the quantum state of a system, encompassing all possible outcomes through the principle of superposition — a foundation unlike classical determinism.",
-  },
-  {
-    id: 2,
-    title: "The Fall of the Roman Republic",
-    course: "HIST 220",
-    date: "2026-03-22",
-    duration: "58m",
-    words: 6105,
-    status: "complete",
-    excerpt:
-      "Caesar's crossing of the Rubicon represents not merely a military manoeuvre but a constitutional rupture, severing the Republic's last institutional safeguards against tyranny.",
-  },
-  {
-    id: 3,
-    title: "Fourier Analysis & Signal Processing",
-    course: "MATH 418",
-    date: "2026-03-21",
-    duration: "1h 28m",
-    words: 9870,
-    status: "complete",
-    excerpt:
-      "Any periodic function can be decomposed into a sum of sinusoids via the Fourier series. The transform extends this to non-periodic signals through the integral representation.",
-  },
-  {
-    id: 4,
-    title: "Renaissance Cartography & Navigation",
-    course: "HIST 315",
-    date: "2026-03-19",
-    duration: "1h 05m",
-    words: 7230,
-    status: "complete",
-    excerpt:
-      "Portolan charts, produced from the 13th century onward, mark a revolution in practical navigation — the first maps drawn from direct observation rather than inherited cosmology.",
-  },
-  {
-    id: 5,
-    title: "Organic Reaction Mechanisms II",
-    course: "CHEM 302",
-    date: "2026-03-18",
-    duration: "1h 35m",
-    words: 10240,
-    status: "processing",
-    excerpt:
-      "Nucleophilic substitution proceeds via SN1 or SN2 pathways, governed by substrate structure, solvent polarity, and the nature of the leaving group — a mechanistic interplay.",
-  },
-  {
-    id: 6,
-    title: "Stellar Evolution & the HR Diagram",
-    course: "ASTR 201",
-    date: "2026-03-17",
-    duration: "52m",
-    words: 5680,
-    status: "complete",
-    excerpt:
-      "The Hertzsprung-Russell diagram plots luminosity against temperature, tracing the lives of stars from the main sequence through giant phases to their eventual endpoints.",
-  },
-  {
-    id: 7,
-    title: "Game Theory: Nash Equilibria",
-    course: "ECON 340",
-    date: "2026-03-15",
-    duration: "1h 18m",
-    words: 7945,
-    status: "complete",
-    excerpt:
-      "A Nash equilibrium obtains when no player can improve their payoff by deviating unilaterally. The prisoner's dilemma illustrates how individual rationality produces collective loss.",
-  },
-  {
-    id: 8,
-    title: "Philosophy of Mind: Consciousness",
-    course: "PHIL 401",
-    date: "2026-03-14",
-    duration: "1h 44m",
-    words: 11320,
-    status: "draft",
-    excerpt:
-      "Chalmers' hard problem asks why physical processes give rise to subjective experience at all — why there is something it is like to be a conscious creature, rather than nothing.",
-  },
-];
+// ─── Accent colour from class name ────────────────────────────────────────────
+const PALETTE = ["#c4a35a", "#4a7fcb", "#7a6bb0", "#4a9c7a", "#b07060"];
+function accentColor(className) {
+  if (!className) return "#c4a35a";
+  let h = 0;
+  for (let i = 0; i < className.length; i++)
+    h = (h * 31 + className.charCodeAt(i)) & 0xffff;
+  return PALETTE[h % PALETTE.length];
+}
 
-const STATUS_META = {
-  complete: { label: "Complete", color: "#c4a35a" },
-  processing: { label: "Processing", color: "#4a7fcb" },
-  draft: { label: "Draft", color: "#6b7a95" },
-};
+// ─── Fuzzy search: every query word must appear in name/summary/class ─────────
+function matches(t, query) {
+  if (!query.trim()) return true;
+  const hay = [t.name, t.ai_summary, t.class_name ?? ""]
+    .join(" ")
+    .toLowerCase();
+  return query
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .every((w) => hay.includes(w));
+}
 
-// ─── Waveform visualization ────────────────────────────────────────────────────
+// ─── Waveform ─────────────────────────────────────────────────────────────────
 function Waveform({ seed, color }) {
   const bars = Array.from({ length: 28 }, (_, i) => ({
     h: 12 + pr(seed * 7.3 + i * 3.71) * 52,
@@ -134,55 +62,183 @@ function Waveform({ seed, color }) {
   );
 }
 
-// ─── Transcript card ───────────────────────────────────────────────────────────
-function TranscriptCard({ t }) {
-  const meta = STATUS_META[t.status];
-  const formattedDate = new Date(t.date).toLocaleDateString("en-GB", {
+// ─── Edit modal ───────────────────────────────────────────────────────────────
+function EditModal({ t, classes, onSave, onClose }) {
+  const [name, setName] = useState(t.name);
+  const [summary, setSummary] = useState(t.ai_summary);
+  const [classInput, setClassInput] = useState(t.class_name ?? "");
+  const [classOpen, setClassOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const classRef = useRef(null);
+
+  useEffect(() => {
+    function onMouseDown(e) {
+      if (classRef.current && !classRef.current.contains(e.target)) {
+        setClassOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  const filteredClasses = classes.filter(
+    (c) => c.toLowerCase().includes(classInput.toLowerCase()) && c !== classInput
+  );
+
+  async function handleSave() {
+    if (!name.trim()) { setError("Name is required."); return; }
+    setSaving(true);
+    setError("");
+    const token = localStorage.getItem("astronotes_token");
+    try {
+      const res = await fetch(`${API}/api/transcripts/${t.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          ai_summary: summary.trim(),
+          class_name: classInput.trim() || null,
+        }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.detail || "Save failed.");
+        return;
+      }
+      const updated = await res.json();
+      onSave(updated);
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Edit Transcript</h2>
+          <button className={styles.modalClose} onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
+              <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        {error && <p className={styles.modalError}>{error}</p>}
+
+        <div className={styles.modalField}>
+          <label className={styles.modalLabel}>Name</label>
+          <input
+            className={styles.modalInput}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Lecture name"
+          />
+        </div>
+
+        <div className={styles.modalField}>
+          <label className={styles.modalLabel}>Class</label>
+          <div className={styles.comboWrap} ref={classRef}>
+            <input
+              className={styles.modalInput}
+              value={classInput}
+              onChange={(e) => { setClassInput(e.target.value); setClassOpen(true); }}
+              onFocus={() => setClassOpen(true)}
+              placeholder="e.g. PHYS 301 — or leave blank"
+              autoComplete="off"
+            />
+            {classOpen && filteredClasses.length > 0 && (
+              <ul className={styles.comboDropdown}>
+                {filteredClasses.map((c) => (
+                  <li
+                    key={c}
+                    className={styles.comboOption}
+                    onMouseDown={(e) => { e.preventDefault(); setClassInput(c); setClassOpen(false); }}
+                  >
+                    <span className={styles.comboDot} style={{ background: accentColor(c) }} />
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.modalField}>
+          <label className={styles.modalLabel}>Summary</label>
+          <textarea
+            className={styles.modalTextarea}
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            rows={4}
+            placeholder="Brief description of the lecture…"
+          />
+        </div>
+
+        <div className={styles.modalActions}>
+          <button className={styles.modalCancel} onClick={onClose} disabled={saving}>
+            Cancel
+          </button>
+          <button className={styles.modalSave} onClick={handleSave} disabled={saving}>
+            {saving ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Transcript card ──────────────────────────────────────────────────────────
+function TranscriptCard({ t, onEdit }) {
+  const color = accentColor(t.class_name);
+  const date = new Date(t.created_at).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 
   return (
-    <article className={styles.card} style={{ "--status-color": meta.color }}>
+    <article className={styles.card} style={{ "--status-color": color }}>
       <div className={styles.cardStatusBar} />
-
       <div className={styles.cardBody}>
         <div className={styles.cardMeta}>
-          <span className={styles.courseBadge}>{t.course}</span>
-          <span className={styles.metaDivider}>·</span>
-          <span className={styles.metaItem}>{formattedDate}</span>
-          <span className={styles.metaDivider}>·</span>
-          <span className={styles.metaItem}>{t.duration}</span>
-          <span className={styles.metaDivider}>·</span>
-          <span className={styles.metaItem}>
-            {t.words.toLocaleString()} words
-          </span>
-          <span
-            className={`${styles.statusPill} ${styles[`status_${t.status}`]}`}
-          >
-            <span className={styles.statusDot} />
-            {meta.label}
-          </span>
+          {t.class_name && (
+            <>
+              <span className={styles.courseBadge}>{t.class_name}</span>
+              <span className={styles.metaDivider}>·</span>
+            </>
+          )}
+          <span className={styles.metaItem}>{date}</span>
         </div>
 
-        <h2 className={styles.cardTitle}>{t.title}</h2>
-        <p className={styles.cardExcerpt}>{t.excerpt}</p>
+        <h2 className={styles.cardTitle}>{t.name}</h2>
+        <p className={styles.cardExcerpt}>{t.ai_summary}</p>
 
         <div className={styles.cardFooter}>
-          <Waveform seed={t.id} color={meta.color} />
+          <Waveform seed={t.id} color={color} />
           <div className={styles.cardActions}>
-            <a href="#" className={styles.actionLink}>
-              View
-            </a>
-            <span className={styles.actionDivider} />
-            <a href="#" className={styles.actionLink}>
-              Map
-            </a>
-            <span className={styles.actionDivider} />
-            <a href="#" className={styles.actionLinkDanger}>
-              Delete
-            </a>
+            <button className={styles.editBtn} onClick={() => onEdit(t)}>
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M11.5 2.5 L13.5 4.5 L5 13 L2.5 13.5 L3 11 Z"
+                  stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round"/>
+                <line x1="9.5" y1="4.5" x2="11.5" y2="6.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Edit
+            </button>
+            <Link href={`/dashboard/${t.id}`} className={styles.openBtn}>
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2"/>
+                <polyline points="6,5.5 10,8 6,10.5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round"/>
+              </svg>
+              Open
+            </Link>
           </div>
         </div>
       </div>
@@ -190,20 +246,58 @@ function TranscriptCard({ t }) {
   );
 }
 
-// ─── Page ──────────────────────────────────────────────────────────────────────
-
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function TranscriptsPage() {
   const router = useRouter();
-  const counts = {
-    complete: TRANSCRIPTS.filter((t) => t.status === "complete").length,
-    processing: TRANSCRIPTS.filter((t) => t.status === "processing").length,
-    draft: TRANSCRIPTS.filter((t) => t.status === "draft").length,
-  };
+  const [transcripts, setTranscripts] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeClass, setActiveClass] = useState(null);
+  const [query, setQuery] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("astronotes_token");
+    const h = { Authorization: `Bearer ${token}` };
+
+    const get = (path) =>
+      fetch(`${API}${path}`, { headers: h })
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .catch(() => null);
+
+    Promise.all([get("/api/transcripts"), get("/api/transcripts/classes")]).then(
+      ([ts, cs]) => {
+        setTranscripts(Array.isArray(ts) ? ts : []);
+        setClasses(Array.isArray(cs) ? cs : []);
+        setLoading(false);
+      }
+    );
+  }, []);
+
+  const visible = useMemo(
+    () =>
+      transcripts
+        .filter((t) => activeClass === null || t.class_name === activeClass)
+        .filter((t) => matches(t, query)),
+    [transcripts, activeClass, query]
+  );
+
+  async function handleCreate() {
+    setCreating(true);
+    try {
+      const result = await createTranscript();
+      if (!result?.id) throw new Error("No transcript ID returned");
+      router.push(`/dashboard/${result.id}`);
+    } catch (err) {
+      alert(`Failed to create transcript: ${err.message}`);
+      setCreating(false);
+    }
+  }
 
   return (
     <AuthGuard>
       <div className={styles.page}>
-        {/* ── Navigation ── */}
         <NavBar />
 
         {/* ── Page header ── */}
@@ -215,98 +309,30 @@ export default function TranscriptsPage() {
                 className={styles.sectionRule}
                 aria-hidden="true"
               >
-                <line
-                  x1="0"
-                  y1="6"
-                  x2="48"
-                  y2="6"
-                  stroke="#c4a35a"
-                  strokeWidth="0.8"
-                  opacity="0.5"
-                />
-                <circle
-                  cx="55"
-                  cy="6"
-                  r="3"
-                  fill="none"
-                  stroke="#c4a35a"
-                  strokeWidth="1"
-                  opacity="0.8"
-                />
+                <line x1="0" y1="6" x2="48" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
+                <circle cx="55" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
                 <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
-                <circle
-                  cx="65"
-                  cy="6"
-                  r="3"
-                  fill="none"
-                  stroke="#c4a35a"
-                  strokeWidth="1"
-                  opacity="0.8"
-                />
-                <line
-                  x1="72"
-                  y1="6"
-                  x2="120"
-                  y2="6"
-                  stroke="#c4a35a"
-                  strokeWidth="0.8"
-                  opacity="0.5"
-                />
+                <circle cx="65" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
+                <line x1="72" y1="6" x2="120" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
               </svg>
               <h1 className={styles.pageTitle}>Transcripts</h1>
               <p className={styles.pageSubtitle}>
-                {TRANSCRIPTS.length} lectures charted &mdash;&nbsp;
-                {counts.complete} complete,&nbsp;
-                {counts.processing} processing,&nbsp;
-                {counts.draft} in draft
+                {loading
+                  ? "Charting your lectures…"
+                  : `${transcripts.length} lecture${transcripts.length !== 1 ? "s" : ""} charted`}
               </p>
             </div>
             <div
               className={styles.newBtn}
-              onClick={async () => {
-                try {
-                  const result = await createTranscript();
-                  if (!result?.id) throw new Error("No transcript ID returned");
-                  router.push(`/dashboard/${result.id}`);
-                } catch (err) {
-                  alert(`Failed to create transcript: ${err.message}`);
-                }
-              }}
+              onClick={creating ? undefined : handleCreate}
+              style={{ opacity: creating ? 0.6 : 1, cursor: creating ? "not-allowed" : "pointer" }}
             >
-              <svg
-                viewBox="0 0 20 20"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                />
-                <line
-                  x1="10"
-                  y1="6"
-                  x2="10"
-                  y2="14"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="6"
-                  y1="10"
-                  x2="14"
-                  y2="10"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
+              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                <line x1="10" y1="6" x2="10" y2="14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <line x1="6" y1="10" x2="14" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
               </svg>
-              New Transcript
+              {creating ? "Creating…" : "New Transcript"}
             </div>
           </div>
         </header>
@@ -316,33 +342,30 @@ export default function TranscriptsPage() {
           <div className={styles.filterBarInner}>
             <div className={styles.filterTabs}>
               <button
-                className={`${styles.filterTab} ${styles.filterTabActive}`}
+                className={`${styles.filterTab} ${activeClass === null ? styles.filterTabActive : ""}`}
+                onClick={() => setActiveClass(null)}
               >
                 All
+                {!loading && (
+                  <span className={styles.filterCount}>{transcripts.length}</span>
+                )}
               </button>
-              <button className={styles.filterTab}>
-                <span
-                  className={styles.filterDot}
-                  style={{ background: "#c4a35a" }}
-                />
-                Complete{" "}
-                <span className={styles.filterCount}>{counts.complete}</span>
-              </button>
-              <button className={styles.filterTab}>
-                <span
-                  className={styles.filterDot}
-                  style={{ background: "#4a7fcb" }}
-                />
-                Processing{" "}
-                <span className={styles.filterCount}>{counts.processing}</span>
-              </button>
-              <button className={styles.filterTab}>
-                <span
-                  className={styles.filterDot}
-                  style={{ background: "#6b7a95" }}
-                />
-                Draft <span className={styles.filterCount}>{counts.draft}</span>
-              </button>
+              {classes.map((cls) => (
+                <button
+                  key={cls}
+                  className={`${styles.filterTab} ${activeClass === cls ? styles.filterTabActive : ""}`}
+                  onClick={() => setActiveClass(activeClass === cls ? null : cls)}
+                >
+                  <span
+                    className={styles.filterDot}
+                    style={{ background: accentColor(cls) }}
+                  />
+                  {cls}
+                  <span className={styles.filterCount}>
+                    {transcripts.filter((t) => t.class_name === cls).length}
+                  </span>
+                </button>
+              ))}
             </div>
             <div className={styles.searchWrap}>
               <svg
@@ -352,42 +375,36 @@ export default function TranscriptsPage() {
                 className={styles.searchIcon}
                 aria-hidden="true"
               >
-                <circle
-                  cx="6.5"
-                  cy="6.5"
-                  r="5"
-                  fill="none"
-                  stroke="#c4a35a"
-                  strokeWidth="1.2"
-                  opacity="0.6"
-                />
-                <line
-                  x1="10.5"
-                  y1="10.5"
-                  x2="14.5"
-                  y2="14.5"
-                  stroke="#c4a35a"
-                  strokeWidth="1.2"
-                  opacity="0.6"
-                  strokeLinecap="round"
-                />
+                <circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" />
+                <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" strokeLinecap="round" />
               </svg>
               <input
                 type="text"
-                placeholder="Search transcripts..."
+                placeholder="Search by name, summary, class…"
                 className={styles.searchInput}
-                readOnly
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        {/* ── Transcript list ── */}
+        {/* ── List ── */}
         <main className={styles.main}>
           <div className={styles.list}>
-            {TRANSCRIPTS.map((t) => (
-              <TranscriptCard key={t.id} t={t} />
-            ))}
+            {loading ? (
+              <p className={styles.emptyState}>Charting your lectures…</p>
+            ) : visible.length === 0 ? (
+              <p className={styles.emptyState}>
+                {query || activeClass
+                  ? "No transcripts match your search."
+                  : "No transcripts yet — create your first one above."}
+              </p>
+            ) : (
+              visible.map((t) => (
+                <TranscriptCard key={t.id} t={t} onEdit={setEditTarget} />
+              ))
+            )}
           </div>
         </main>
 
@@ -395,49 +412,38 @@ export default function TranscriptsPage() {
         <footer className={styles.footer}>
           <div className={styles.footerInner}>
             <div className={styles.footerBrand}>
-              <svg
-                viewBox="0 0 20 20"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="8.5"
-                  fill="none"
-                  stroke="#c4a35a"
-                  strokeWidth="1"
-                  opacity="0.6"
-                />
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="4.5"
-                  fill="none"
-                  stroke="#c4a35a"
-                  strokeWidth="0.6"
-                  opacity="0.4"
-                />
+              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                <circle cx="10" cy="10" r="8.5" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.6" />
+                <circle cx="10" cy="10" r="4.5" fill="none" stroke="#c4a35a" strokeWidth="0.6" opacity="0.4" />
                 <circle cx="10" cy="10" r="1.5" fill="#c4a35a" opacity="0.7" />
               </svg>
               <span className={styles.footerBrandName}>AstroNotes</span>
             </div>
             <ul className={styles.footerLinks}>
-              <li>
-                <Link href="/">Home</Link>
-              </li>
-              <li>
-                <a href="#">About</a>
-              </li>
-              <li>
-                <a href="#">Privacy</a>
-              </li>
+              <li><Link href="/">Home</Link></li>
             </ul>
             <p className={styles.footerCopy}>&copy; 2026 AstroNotes</p>
           </div>
         </footer>
       </div>
+
+      {editTarget && (
+        <EditModal
+          t={editTarget}
+          classes={classes}
+          onClose={() => setEditTarget(null)}
+          onSave={(updated) => {
+            setTranscripts((prev) =>
+              prev.map((t) => (t.id === updated.id ? updated : t))
+            );
+            // refresh classes list in case a new one was added or removed
+            if (updated.class_name && !classes.includes(updated.class_name)) {
+              setClasses((prev) => [...prev, updated.class_name].sort());
+            }
+            setEditTarget(null);
+          }}
+        />
+      )}
     </AuthGuard>
   );
 }
