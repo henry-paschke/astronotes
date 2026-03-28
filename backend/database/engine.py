@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Session, create_engine
-from database.models import User, Transcript, Permission
+from database.models import User, Transcript
 
 DATABASE_URL = (
     "postgresql+psycopg2://stibnyblog:si4rcn-Jp43gFkb"
