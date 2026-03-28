@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 from database.models import Transcript, User
 from database.engine import get_session
@@ -23,12 +23,20 @@ def create_transcript(
     database.commit()
     database.refresh(transcript)
 
-    return transcript.id
+    return {"id": transcript.id}
 
 
 @transcript_router.get("/get-transcript")
-def get_transcript(id: int, database: Session = Depends(get_session)):
+def get_transcript(
+    id: int,
+    database: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
     transcript = database.get(Transcript, id)
+    if transcript is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found")
+    if transcript.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     graph: GraphStateFAISSSpaCy = deserialize(transcript.data)
     graph.clean()
     return graph.cleaned

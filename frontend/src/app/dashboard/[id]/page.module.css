@@ -1,0 +1,196 @@
+/* ── Page shell ───────────────────────────────────────────────────────────── */
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--parchment);
+  font-family: var(--font-crimson), Georgia, serif;
+  overflow: hidden;
+}
+
+/* Below the fixed navbar */
+.body {
+  display: flex;
+  flex: 1;
+  margin-top: 64px;
+  overflow: hidden;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.sidebar {
+  position: relative;
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.sidebarCollapsed {
+  width: 0;
+}
+
+.sidebarInner {
+  width: 220px;
+  min-width: 220px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 16px;
+}
+
+.sidebarHeader {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebarLabel {
+  font-family: var(--font-cinzel), serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+
+/* ── Tool buttons ─────────────────────────────────────────────────────────── */
+.toolList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 10px;
+  flex: 1;
+}
+
+.toolBtn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 13px 14px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--parchment-dim);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.toolBtn:hover {
+  background: rgba(196,163,90,0.06);
+  color: var(--parchment);
+  border-color: var(--border);
+}
+
+.toolBtnActive {
+  background: rgba(196,163,90,0.1);
+  border-color: var(--border-bright);
+  color: var(--gold-light);
+}
+
+.toolIcon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolIcon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.toolLabel {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Sidebar toggle tab ───────────────────────────────────────────────────── */
+.sidebarToggle {
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 18px;
+  height: 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sidebarToggle:hover {
+  background: var(--bg-mid);
+  border-color: var(--border-bright);
+}
+
+/* ── Canvas ───────────────────────────────────────────────────────────────── */
+.canvas {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  background: var(--bg-deep);
+  /* Subtle grid */
+  background-image:
+    linear-gradient(rgba(196,163,90,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,163,90,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Debug / test panel ───────────────────────────────────────────────────── */
+.debugPanel {
+  margin: 40px;
+  padding: 28px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  max-width: 800px;
+}
+
+.debugTitle {
+  font-family: var(--font-cinzel), serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 16px;
+}
+
+.debugMeta {
+  font-size: 14px;
+  color: var(--parchment-dim);
+  margin: 0;
+}
+
+.debugError {
+  font-size: 14px;
+  color: #e07070;
+  margin: 0;
+}
+
+.debugJson {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--parchment-dim);
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

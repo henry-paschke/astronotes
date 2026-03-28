@@ -7,7 +7,12 @@ DATABASE_URL = (
     "?sslmode=require"
 )
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,
+    pool_pre_ping=True,   # test connection before use, discard if stale
+    pool_recycle=1800,    # recycle connections after 30 min (Azure timeout)
+)
 
 SQLModel.metadata.create_all(engine)
 
