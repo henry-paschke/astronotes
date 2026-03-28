@@ -17,11 +17,3 @@ class Transcript(SQLModel, table=True):
     created_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")
     user: Optional["User"] = Relationship(back_populates="transcripts")
-    permissions: List["Permission"] = Relationship(back_populates="transcript")
-
-
-class Permission(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    role: str
-    transcript_id: int = Field(foreign_key="transcript.id")
-    transcript: Optional["Transcript"] = Relationship(back_populates="permissions")

@@ -10,6 +10,8 @@ import faiss
 from typing import List
 import uuid
 
+NLP = spacy.load("en_core_web_md")
+
 
 TOPIC_COLORS = [
     "#FF9F5A",
@@ -119,15 +121,6 @@ class GraphState:
         self.subtopic_parent = {}
         self.cleaned = {}
 
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state["nlp"]  # ✅ exclude spaCy model — ~50MB gone
-        return state
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-        self.nlp = spacy.load("en_core_web_md")  # reload on deserialize
-
     def _next_color(self):
         c = TOPIC_COLORS[self._color_idx % len(TOPIC_COLORS)]
         self._color_idx += 1
@@ -217,7 +210,6 @@ class GraphState:
 class GraphStateFAISSSpaCy(GraphState):
     def __init__(self, topic_thresh=0.85, subtopic_thresh=0.75):
         super().__init__()
-        self.nlp = spacy.load("en_core_web_md")
         self.topic_thresh = topic_thresh
         self.subtopic_thresh = subtopic_thresh
 
@@ -230,7 +222,7 @@ class GraphStateFAISSSpaCy(GraphState):
         self.subtopic_faiss = None
 
     def _get_embedding(self, text: str) -> np.ndarray:
-        vec = self.nlp(text).vector
+        vec = NLP(text).vector
         norm = np.linalg.norm(vec)
         return (vec / norm).astype("float32") if norm > 0 else vec.astype("float32")
 
