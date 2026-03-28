@@ -1,45 +1,42 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import styles from '../auth.module.css';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import styles from "../auth.module.css";
+import { getToken } from "../api/account";
 
-const API = 'http://localhost:8000';
+const API = "http://localhost:8000";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       // OAuth2PasswordRequestForm expects application/x-www-form-urlencoded
       const body = new URLSearchParams({ username, password });
-      const res = await fetch(`${API}/api/auth/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body,
-      });
+      const res = await getToken(body);
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.detail || 'Login failed. Check your credentials.');
+        setError(data.detail || "Login failed. Check your credentials.");
         return;
       }
 
       const { access_token } = await res.json();
-      localStorage.setItem('astronotes_token', access_token);
-      localStorage.setItem('astronotes_username', username);
-      router.push('/transcripts');
+      localStorage.setItem("astronotes_token", access_token);
+      localStorage.setItem("astronotes_username", username);
+      router.push("/transcripts");
     } catch {
-      setError('Could not reach the server. Is the backend running?');
+      setError("Could not reach the server. Is the backend running?");
     } finally {
       setLoading(false);
     }
@@ -48,7 +45,9 @@ export default function LoginForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.fieldGroup}>
-        <label htmlFor="username" className={styles.label}>Username</label>
+        <label htmlFor="username" className={styles.label}>
+          Username
+        </label>
         <input
           id="username"
           type="text"
@@ -62,7 +61,9 @@ export default function LoginForm() {
       </div>
 
       <div className={styles.fieldGroup}>
-        <label htmlFor="password" className={styles.label}>Password</label>
+        <label htmlFor="password" className={styles.label}>
+          Password
+        </label>
         <input
           id="password"
           type="password"
@@ -78,12 +79,11 @@ export default function LoginForm() {
       {error && <p className={styles.error}>{error}</p>}
 
       <button type="submit" className={styles.submitBtn} disabled={loading}>
-        {loading ? 'Charting course…' : 'Sign In'}
+        {loading ? "Charting course…" : "Sign In"}
       </button>
 
       <p className={styles.cardFooter}>
-        No account?{' '}
-        <Link href="/signup">Create one</Link>
+        No account? <Link href="/signup">Create one</Link>
       </p>
     </form>
   );
