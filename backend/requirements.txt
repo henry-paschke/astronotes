@@ -1,3 +1,5 @@
 fastapi
 sqlmodel
 psycopg[binary]
+uvicorn
+psycopg2
