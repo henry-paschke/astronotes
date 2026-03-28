@@ -32,6 +32,12 @@ class Token(BaseModel):
     token_type: str
 
 
+class UserUpdate(BaseModel):
+    current_password: str
+    new_username: str | None = None
+    new_password: str | None = None
+
+
 # ── Endpoints ──────────────────────────────────────────────────────────────────
 
 @user_router.post(
@@ -81,4 +87,34 @@ def login(
     summary="Get the currently authenticated user",
 )
 def get_me(current_user: User = Depends(get_current_user)):
+    return UserOut(id=current_user.id, username=current_user.username)
+
+
+@user_router.patch(
+    "/users/me",
+    response_model=UserOut,
+    summary="Update username or password",
+)
+def update_me(
+    body: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_session),
+):
+    if not verify_password(body.current_password, current_user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Current password is incorrect",
+        )
+    if body.new_username and body.new_username != current_user.username:
+        if db.exec(select(User).where(User.username == body.new_username)).first():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username already taken",
+            )
+        current_user.username = body.new_username
+    if body.new_password:
+        current_user.password = hash_password(body.new_password)
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
     return UserOut(id=current_user.id, username=current_user.username)

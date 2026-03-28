@@ -56,6 +56,7 @@ export default function SignupForm() {
       if (tokenRes.ok) {
         const { access_token } = await tokenRes.json();
         localStorage.setItem('astronotes_token', access_token);
+        localStorage.setItem('astronotes_username', username);
       }
 
       router.push('/transcripts');

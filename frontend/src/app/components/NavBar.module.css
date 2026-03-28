@@ -86,6 +86,12 @@
   text-transform: uppercase;
   color: var(--gold);
   padding: 8px 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navUser:hover {
+  color: var(--gold-light);
 }
 
 .navUserDot {
