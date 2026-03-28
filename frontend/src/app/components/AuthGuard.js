@@ -1,33 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-const API = 'http://localhost:8000';
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('astronotes_token');
-    if (!token) {
+    if (!localStorage.getItem('astronotes_token')) {
       router.replace('/login');
-      return;
     }
-    fetch(`${API}/api/users/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => {
-        if (r.ok) setAuthorized(true);
-        else {
-          localStorage.removeItem('astronotes_token');
-          router.replace('/login');
-        }
-      })
-      .catch(() => router.replace('/login'));
   }, [router]);
 
-  if (!authorized) return null;
+  // Render immediately — NavBar verifies the token in the background
+  // and will clear stale state if it's expired.
+  if (typeof window !== 'undefined' && !localStorage.getItem('astronotes_token')) {
+    return null;
+  }
   return children;
 }
