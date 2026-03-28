@@ -4,11 +4,9 @@ import Link from "next/link";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import { createTranscript } from "../api/transcript";
+import { createTranscript, listTranscripts, listClasses, updateTranscript } from "../api/transcript";
 import NavBar from "../components/NavBar";
 import AuthGuard from "../components/AuthGuard";
-
-const API = "http://localhost:8000";
 
 // ─── Deterministic pseudo-random for waveform bars ────────────────────────────
 function pr(seed) {
@@ -90,29 +88,15 @@ function EditModal({ t, classes, onSave, onClose }) {
     if (!name.trim()) { setError("Name is required."); return; }
     setSaving(true);
     setError("");
-    const token = localStorage.getItem("astronotes_token");
     try {
-      const res = await fetch(`${API}/api/transcripts/${t.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          ai_summary: summary.trim(),
-          class_name: classInput.trim() || null,
-        }),
+      const updated = await updateTranscript(t.id, {
+        name: name.trim(),
+        ai_summary: summary.trim(),
+        class_name: classInput.trim() || null,
       });
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}));
-        setError(d.detail || "Save failed.");
-        return;
-      }
-      const updated = await res.json();
       onSave(updated);
-    } catch {
-      setError("Could not reach the server.");
+    } catch (e) {
+      setError(e.message || "Could not reach the server.");
     } finally {
       setSaving(false);
     }
@@ -258,16 +242,10 @@ export default function TranscriptsPage() {
   const [editTarget, setEditTarget] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("astronotes_token");
-    const h = { Authorization: `Bearer ${token}` };
-
-    const get = (path) =>
-      fetch(`${API}${path}`, { headers: h })
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .catch(() => null);
-
-    Promise.all([get("/api/transcripts"), get("/api/transcripts/classes")]).then(
-      ([ts, cs]) => {
+    Promise.all([
+      listTranscripts().catch(() => null),
+      listClasses().catch(() => null),
+    ]).then(([ts, cs]) => {
         setTranscripts(Array.isArray(ts) ? ts : []);
         setClasses(Array.isArray(cs) ? cs : []);
         setLoading(false);

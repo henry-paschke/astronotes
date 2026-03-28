@@ -1,11 +1,6 @@
 from sqlmodel import SQLModel, Session, create_engine
 from database.models import User, Transcript
-
-DATABASE_URL = (
-    "postgresql+psycopg2://stibnyblog:si4rcn-Jp43gFkb"
-    "@ksu-backend-server.postgres.database.azure.com:5432/a2"
-    "?sslmode=require"
-)
+from config import DATABASE_URL
 
 engine = create_engine(
     DATABASE_URL,

@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -10,8 +9,7 @@ from sqlmodel import Session, select
 
 from database.engine import get_session
 from database.models import User
-
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "astronotes-dev-secret-change-in-production")
+from config import JWT_SECRET_KEY as SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
