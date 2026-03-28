@@ -1,8 +1,5 @@
 import redis.asyncio as redis
-
-REDIS_HOST = "redis-13790.crce197.us-east-2-1.ec2.cloud.redislabs.com"
-REDIS_PORT = 13790
-REDIS_PASSWORD = "5DNhlNp0iH9nCHbXsNpc4buT3mMCsuyM"
+from config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 
 
 async def get_redis():
