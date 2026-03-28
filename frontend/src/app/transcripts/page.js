@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { createTranscript } from "../api/transcript";
 import NavBar from "../components/NavBar";
@@ -192,6 +193,7 @@ function TranscriptCard({ t }) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TranscriptsPage() {
+  const router = useRouter();
   const counts = {
     complete: TRANSCRIPTS.filter((t) => t.status === "complete").length,
     processing: TRANSCRIPTS.filter((t) => t.status === "processing").length,
@@ -262,7 +264,13 @@ export default function TranscriptsPage() {
             <div
               className={styles.newBtn}
               onClick={async () => {
-                await createTranscript();
+                try {
+                  const result = await createTranscript();
+                  if (!result?.id) throw new Error("No transcript ID returned");
+                  router.push(`/dashboard/${result.id}`);
+                } catch (err) {
+                  alert(`Failed to create transcript: ${err.message}`);
+                }
               }}
             >
               <svg
