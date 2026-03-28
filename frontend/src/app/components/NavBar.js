@@ -9,29 +9,41 @@ const API = 'http://localhost:8000';
 
 export default function NavBar({ showFeatureLinks = false }) {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [checked, setChecked] = useState(false);
+  // Read username synchronously from localStorage so the correct buttons
+  // appear on the very first render — no API round-trip needed for display.
+  const [username, setUsername] = useState(
+    () => (typeof window !== 'undefined' ? localStorage.getItem('astronotes_username') : null)
+  );
 
+  // Background verification: silently clear stale state if the token is gone/expired.
   useEffect(() => {
     const token = localStorage.getItem('astronotes_token');
     if (!token) {
-      setChecked(true);
+      if (username) {
+        localStorage.removeItem('astronotes_username');
+        setUsername(null);
+      }
       return;
     }
-    fetch(`${API}/api/users/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API}/api/users/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.username) setUser(data);
-        else localStorage.removeItem('astronotes_token');
+        if (data?.username) {
+          setUsername(data.username);
+          localStorage.setItem('astronotes_username', data.username);
+        } else {
+          localStorage.removeItem('astronotes_token');
+          localStorage.removeItem('astronotes_username');
+          setUsername(null);
+        }
       })
-      .catch(() => {})
-      .finally(() => setChecked(true));
-  }, []);
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSignOut() {
     localStorage.removeItem('astronotes_token');
+    localStorage.removeItem('astronotes_username');
+    setUsername(null);
     router.push('/');
   }
 
@@ -54,39 +66,37 @@ export default function NavBar({ showFeatureLinks = false }) {
         <span className={styles.navLogoText}>AstroNotes</span>
       </Link>
 
-      {checked && (
-        <ul className={styles.navLinks}>
-          {showFeatureLinks && (
-            <>
-              <li><a href="#features" className={styles.navLink}>Features</a></li>
-              <li><a href="#about" className={styles.navLink}>About</a></li>
-            </>
-          )}
-          {user ? (
-            <>
-              <li>
-                <Link href="/transcripts" className={styles.navLink}>Transcripts</Link>
-              </li>
-              <li>
-                <span className={styles.navUser}>
-                  <span className={styles.navUserDot} />
-                  {user.username}
-                </span>
-              </li>
-              <li>
-                <button className={styles.navSignOut} onClick={handleSignOut}>
-                  Sign Out
-                </button>
-              </li>
-            </>
-          ) : (
-            <>
-              <li><Link href="/login" className={styles.navLink}>Sign In</Link></li>
-              <li><Link href="/signup" className={styles.navCta}>Begin Voyage</Link></li>
-            </>
-          )}
-        </ul>
-      )}
+      <ul className={styles.navLinks} suppressHydrationWarning>
+        {showFeatureLinks && (
+          <>
+            <li><a href="#features" className={styles.navLink}>Features</a></li>
+            <li><a href="#about" className={styles.navLink}>About</a></li>
+          </>
+        )}
+        {username ? (
+          <>
+            <li>
+              <Link href="/transcripts" className={styles.navLink}>Transcripts</Link>
+            </li>
+            <li>
+              <Link href="/account" className={styles.navUser}>
+                <span className={styles.navUserDot} />
+                {username}
+              </Link>
+            </li>
+            <li>
+              <button className={styles.navSignOut} onClick={handleSignOut}>
+                Sign Out
+              </button>
+            </li>
+          </>
+        ) : (
+          <>
+            <li><Link href="/login" className={styles.navLink}>Sign In</Link></li>
+            <li><Link href="/signup" className={styles.navCta}>Begin Voyage</Link></li>
+          </>
+        )}
+      </ul>
     </nav>
   );
 }

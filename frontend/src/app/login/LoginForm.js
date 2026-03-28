@@ -36,6 +36,7 @@ export default function LoginForm() {
 
       const { access_token } = await res.json();
       localStorage.setItem('astronotes_token', access_token);
+      localStorage.setItem('astronotes_username', username);
       router.push('/transcripts');
     } catch {
       setError('Could not reach the server. Is the backend running?');
