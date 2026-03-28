@@ -2,8 +2,6 @@ import { useState } from "react";
 import { AudioRecorder } from "react-audio-voice-recorder";
 
 export default function VoiceRecorder({ transcript, setTranscript }) {
-  const [transcript, setTranscript] = useState("");
-
   const handleRecordingComplete = async (blob) => {
     const formData = new FormData();
     formData.append("file", blob, "recording.webm");

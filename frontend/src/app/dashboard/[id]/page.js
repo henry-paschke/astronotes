@@ -6,6 +6,7 @@ import NavBar from "../../components/NavBar";
 import AuthGuard from "../../components/AuthGuard";
 import styles from "./page.module.css";
 import { initializeRedis } from "@/app/api/dashboard";
+import { getTranscript } from "@/app/api/transcript";
 
 const API = "http://localhost:8000";
 
