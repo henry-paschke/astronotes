@@ -1,7 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./page.module.css";
-import NavBar from "../components/NavBar";
-import AuthGuard from "../components/AuthGuard";
+import { createTranscript } from "../api/transcript";
 
 // ─── Pseudo-random (same helper as landing page) ──────────────────────────────
 function pr(seed) {
@@ -102,9 +103,9 @@ const TRANSCRIPTS = [
 ];
 
 const STATUS_META = {
-  complete:   { label: "Complete",   color: "#c4a35a" },
+  complete: { label: "Complete", color: "#c4a35a" },
   processing: { label: "Processing", color: "#4a7fcb" },
-  draft:      { label: "Draft",      color: "#6b7a95" },
+  draft: { label: "Draft", color: "#6b7a95" },
 };
 
 // ─── Waveform visualization ────────────────────────────────────────────────────
@@ -151,8 +152,12 @@ function TranscriptCard({ t }) {
           <span className={styles.metaDivider}>·</span>
           <span className={styles.metaItem}>{t.duration}</span>
           <span className={styles.metaDivider}>·</span>
-          <span className={styles.metaItem}>{t.words.toLocaleString()} words</span>
-          <span className={`${styles.statusPill} ${styles[`status_${t.status}`]}`}>
+          <span className={styles.metaItem}>
+            {t.words.toLocaleString()} words
+          </span>
+          <span
+            className={`${styles.statusPill} ${styles[`status_${t.status}`]}`}
+          >
             <span className={styles.statusDot} />
             {meta.label}
           </span>
@@ -164,11 +169,17 @@ function TranscriptCard({ t }) {
         <div className={styles.cardFooter}>
           <Waveform seed={t.id} color={meta.color} />
           <div className={styles.cardActions}>
-            <a href="#" className={styles.actionLink}>View</a>
+            <a href="#" className={styles.actionLink}>
+              View
+            </a>
             <span className={styles.actionDivider} />
-            <a href="#" className={styles.actionLink}>Map</a>
+            <a href="#" className={styles.actionLink}>
+              Map
+            </a>
             <span className={styles.actionDivider} />
-            <a href="#" className={styles.actionLinkDanger}>Delete</a>
+            <a href="#" className={styles.actionLinkDanger}>
+              Delete
+            </a>
           </div>
         </div>
       </div>
@@ -177,35 +188,143 @@ function TranscriptCard({ t }) {
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
-export const metadata = {
-  title: "Transcripts — AstroNotes",
-  description: "Your recorded lectures and transcripts.",
-};
 
 export default function TranscriptsPage() {
   const counts = {
-    complete:   TRANSCRIPTS.filter((t) => t.status === "complete").length,
+    complete: TRANSCRIPTS.filter((t) => t.status === "complete").length,
     processing: TRANSCRIPTS.filter((t) => t.status === "processing").length,
-    draft:      TRANSCRIPTS.filter((t) => t.status === "draft").length,
+    draft: TRANSCRIPTS.filter((t) => t.status === "draft").length,
   };
 
   return (
-    <AuthGuard>
     <div className={styles.page}>
-
       {/* ── Navigation ── */}
-      <NavBar />
+      <nav className={styles.nav}>
+        <Link href="/" className={styles.navLogo}>
+          <svg
+            viewBox="0 0 28 28"
+            className={styles.navLogoMark}
+            aria-hidden="true"
+          >
+            <circle
+              cx="14"
+              cy="14"
+              r="12"
+              fill="none"
+              stroke="#c4a35a"
+              strokeWidth="1.2"
+              strokeDasharray="60 15.4"
+              style={{
+                transformOrigin: "14px 14px",
+                animation: "rotateSlow 18s linear infinite",
+              }}
+            />
+            <circle
+              cx="14"
+              cy="14"
+              r="7"
+              fill="none"
+              stroke="#c4a35a"
+              strokeWidth="0.7"
+              opacity="0.6"
+              strokeDasharray="36 8"
+              style={{
+                transformOrigin: "14px 14px",
+                animation: "rotateReverse 12s linear infinite",
+              }}
+            />
+            <line
+              x1="14"
+              y1="2"
+              x2="14"
+              y2="26"
+              stroke="#c4a35a"
+              strokeWidth="0.7"
+              opacity="0.45"
+            />
+            <line
+              x1="2"
+              y1="14"
+              x2="26"
+              y2="14"
+              stroke="#c4a35a"
+              strokeWidth="0.7"
+              opacity="0.45"
+            />
+            <circle cx="14" cy="14" r="2" fill="#e8c878" />
+          </svg>
+          <span className={styles.navLogoText}>AstroNotes</span>
+        </Link>
+        <ul className={styles.navLinks}>
+          <li>
+            <Link href="/#features" className={styles.navLink}>
+              Features
+            </Link>
+          </li>
+          <li>
+            <a href="#" className={styles.navLink}>
+              About
+            </a>
+          </li>
+          <li>
+            <a href="#" className={styles.navLink}>
+              Sign In
+            </a>
+          </li>
+          <li>
+            <a href="#" className={styles.navCta}>
+              Begin Voyage
+            </a>
+          </li>
+        </ul>
+      </nav>
 
       {/* ── Page header ── */}
       <header className={styles.pageHeader}>
         <div className={styles.pageHeaderInner}>
           <div className={styles.headerText}>
-            <svg viewBox="0 0 120 12" className={styles.sectionRule} aria-hidden="true">
-              <line x1="0" y1="6" x2="48" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
-              <circle cx="55" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
+            <svg
+              viewBox="0 0 120 12"
+              className={styles.sectionRule}
+              aria-hidden="true"
+            >
+              <line
+                x1="0"
+                y1="6"
+                x2="48"
+                y2="6"
+                stroke="#c4a35a"
+                strokeWidth="0.8"
+                opacity="0.5"
+              />
+              <circle
+                cx="55"
+                cy="6"
+                r="3"
+                fill="none"
+                stroke="#c4a35a"
+                strokeWidth="1"
+                opacity="0.8"
+              />
               <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
-              <circle cx="65" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
-              <line x1="72" y1="6" x2="120" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
+              <circle
+                cx="65"
+                cy="6"
+                r="3"
+                fill="none"
+                stroke="#c4a35a"
+                strokeWidth="1"
+                opacity="0.8"
+              />
+              <line
+                x1="72"
+                y1="6"
+                x2="120"
+                y2="6"
+                stroke="#c4a35a"
+                strokeWidth="0.8"
+                opacity="0.5"
+              />
             </svg>
             <h1 className={styles.pageTitle}>Transcripts</h1>
             <p className={styles.pageSubtitle}>
@@ -215,14 +334,42 @@ export default function TranscriptsPage() {
               {counts.draft} in draft
             </p>
           </div>
-          <a href="#new" className={styles.newBtn}>
+          <div
+            className={styles.newBtn}
+            onClick={async () => {
+              await createTranscript();
+            }}
+          >
             <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-              <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1.4" />
-              <line x1="10" y1="6" x2="10" y2="14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              <line x1="6" y1="10" x2="14" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <circle
+                cx="10"
+                cy="10"
+                r="8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+              />
+              <line
+                x1="10"
+                y1="6"
+                x2="10"
+                y2="14"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              <line
+                x1="6"
+                y1="10"
+                x2="14"
+                y2="10"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
             </svg>
             New Transcript
-          </a>
+          </div>
         </div>
       </header>
 
@@ -230,24 +377,60 @@ export default function TranscriptsPage() {
       <div className={styles.filterBar}>
         <div className={styles.filterBarInner}>
           <div className={styles.filterTabs}>
-            <button className={`${styles.filterTab} ${styles.filterTabActive}`}>All</button>
-            <button className={styles.filterTab}>
-              <span className={styles.filterDot} style={{ background: "#c4a35a" }} />
-              Complete <span className={styles.filterCount}>{counts.complete}</span>
+            <button className={`${styles.filterTab} ${styles.filterTabActive}`}>
+              All
             </button>
             <button className={styles.filterTab}>
-              <span className={styles.filterDot} style={{ background: "#4a7fcb" }} />
-              Processing <span className={styles.filterCount}>{counts.processing}</span>
+              <span
+                className={styles.filterDot}
+                style={{ background: "#c4a35a" }}
+              />
+              Complete{" "}
+              <span className={styles.filterCount}>{counts.complete}</span>
             </button>
             <button className={styles.filterTab}>
-              <span className={styles.filterDot} style={{ background: "#6b7a95" }} />
+              <span
+                className={styles.filterDot}
+                style={{ background: "#4a7fcb" }}
+              />
+              Processing{" "}
+              <span className={styles.filterCount}>{counts.processing}</span>
+            </button>
+            <button className={styles.filterTab}>
+              <span
+                className={styles.filterDot}
+                style={{ background: "#6b7a95" }}
+              />
               Draft <span className={styles.filterCount}>{counts.draft}</span>
             </button>
           </div>
           <div className={styles.searchWrap}>
-            <svg viewBox="0 0 16 16" width="13" height="13" className={styles.searchIcon} aria-hidden="true">
-              <circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" />
-              <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" strokeLinecap="round" />
+            <svg
+              viewBox="0 0 16 16"
+              width="13"
+              height="13"
+              className={styles.searchIcon}
+              aria-hidden="true"
+            >
+              <circle
+                cx="6.5"
+                cy="6.5"
+                r="5"
+                fill="none"
+                stroke="#c4a35a"
+                strokeWidth="1.2"
+                opacity="0.6"
+              />
+              <line
+                x1="10.5"
+                y1="10.5"
+                x2="14.5"
+                y2="14.5"
+                stroke="#c4a35a"
+                strokeWidth="1.2"
+                opacity="0.6"
+                strokeLinecap="round"
+              />
             </svg>
             <input
               type="text"
@@ -273,21 +456,42 @@ export default function TranscriptsPage() {
         <div className={styles.footerInner}>
           <div className={styles.footerBrand}>
             <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-              <circle cx="10" cy="10" r="8.5" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.6" />
-              <circle cx="10" cy="10" r="4.5" fill="none" stroke="#c4a35a" strokeWidth="0.6" opacity="0.4" />
+              <circle
+                cx="10"
+                cy="10"
+                r="8.5"
+                fill="none"
+                stroke="#c4a35a"
+                strokeWidth="1"
+                opacity="0.6"
+              />
+              <circle
+                cx="10"
+                cy="10"
+                r="4.5"
+                fill="none"
+                stroke="#c4a35a"
+                strokeWidth="0.6"
+                opacity="0.4"
+              />
               <circle cx="10" cy="10" r="1.5" fill="#c4a35a" opacity="0.7" />
             </svg>
             <span className={styles.footerBrandName}>AstroNotes</span>
           </div>
           <ul className={styles.footerLinks}>
-            <li><Link href="/">Home</Link></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Privacy</a></li>
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
+              <a href="#">About</a>
+            </li>
+            <li>
+              <a href="#">Privacy</a>
+            </li>
           </ul>
           <p className={styles.footerCopy}>&copy; 2026 AstroNotes</p>
         </div>
       </footer>
     </div>
-    </AuthGuard>
   );
 }
