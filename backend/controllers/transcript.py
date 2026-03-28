@@ -8,7 +8,8 @@ from database.models import Transcript, User
 from database.engine import get_session
 from logic.mindmap import GraphStateFAISSSpaCy
 from utilities.auth import get_current_user
-from utilities.serialize import deserialize, serialize
+from utilities.serialize import serialize
+from utilities.graph import get_user_transcript
 
 
 transcript_router = APIRouter(prefix="/api")
@@ -89,9 +90,13 @@ def update_transcript(
 ):
     transcript = database.get(Transcript, transcript_id)
     if transcript is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found"
+        )
     if transcript.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+        )
     transcript.name = body.name
     transcript.ai_summary = body.ai_summary
     transcript.class_name = body.class_name or None
@@ -113,11 +118,6 @@ def get_transcript(
     database: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
-    transcript = database.get(Transcript, id)
-    if transcript is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found")
-    if transcript.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-    graph: GraphStateFAISSSpaCy = deserialize(transcript.data)
-    graph.clean()
-    return graph.cleaned
+    return get_user_transcript(
+        transcript_id=id, user_id=current_user.id, database=database
+    )
