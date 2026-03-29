@@ -25,6 +25,7 @@ class Transcript(SQLModel, table=True):
     summary: Optional["Summary"] = Relationship(back_populates="transcript")
     flashcard_set: Optional["FlashcardSet"] = Relationship(back_populates="transcript")
     presentation: Optional["Presentation"] = Relationship(back_populates="transcript")
+    exam_set: Optional["ExamSet"] = Relationship(back_populates="transcript")
 
 
 class Summary(SQLModel, table=True):
@@ -67,3 +68,23 @@ class PresentationSlide(SQLModel, table=True):
     position: int
     title: str
     content: str
+
+
+class ExamSet(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    transcript_id: int = Field(foreign_key="transcript.id", unique=True)
+    transcript: Optional["Transcript"] = Relationship(back_populates="exam_set")
+    generated_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    questions: List["ExamQuestion"] = Relationship(back_populates="exam_set")
+
+
+class ExamQuestion(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    exam_id: int = Field(foreign_key="examset.id")
+    exam_set: Optional["ExamSet"] = Relationship(back_populates="questions")
+    position: int
+    type: str           # "multiple_choice" | "true_false" | "multi_select"
+    question: str
+    options: Optional[str] = None   # JSON array of option strings; null for true_false
+    correct_answer: str             # "0"/"1"/"2"/"3" for mc, "True"/"False" for tf, '["0","2"]' for ms
+    explanation: str
