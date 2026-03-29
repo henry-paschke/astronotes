@@ -5,40 +5,38 @@ import { deinitializeRedis, initializeRedis } from "../api/dashboard";
 import { updateGraph } from "../api/mindmap";
 import styles from "./VoiceRecorder.module.css";
 
-// Minimum words buffered before sending to graph mid-recording
-const MIN_GRAPH_WORDS = 16;
-// How often to flush to graph regardless of buffer size (ms)
+const MIN_GRAPH_WORDS = 10;
 const GRAPH_INTERVAL_MS = 10_000;
 
 export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const [isRecording, setIsRecording] = useState(false);
-  const [graphStatus, setGraphStatus] = useState(""); // "" | "updating"
+  const [graphStatus, setGraphStatus] = useState("");
 
   const recognitionRef = useRef(null);
-  const pendingTextRef = useRef(""); // text buffered since last graph flush
-  const graphUpdatingRef = useRef(false); // prevent concurrent graph calls
+  const pendingTextRef = useRef("");
+  const lastInterimRef = useRef(""); // tracks the latest interim text
+  const graphUpdatingRef = useRef(false);
   const graphIntervalRef = useRef(null);
-  const activeRef = useRef(false); // true while recording session is live
+  const activeRef = useRef(false);
   const lastGraphSizeRef = useRef({ nodes: 0, links: 0 });
-  const restartTimerRef = useRef(null); // debounce recognition restarts
-  const networkErrorsRef = useRef(0);  // consecutive network errors
+  const restartTimerRef = useRef(null);
+  const lastFlushTimeRef = useRef(0);
 
-  // ── Flush buffered text to graph ──────────────────────────────────────────
   async function flushToGraph({ force = false } = {}) {
     if (graphUpdatingRef.current) {
       if (!force) return;
-      // Force flush: wait for the in-progress update to finish first
-      while (graphUpdatingRef.current) {
+      while (graphUpdatingRef.current)
         await new Promise((r) => setTimeout(r, 100));
-      }
     }
     const words = pendingTextRef.current.trim().split(/\s+/).filter(Boolean);
+    console.log("[GRAPH] flush called, words:", words.length, "force:", force);
     if (!force && words.length < MIN_GRAPH_WORDS) return;
     if (words.length === 0) return;
 
     const text = pendingTextRef.current.trim();
     pendingTextRef.current = "";
     graphUpdatingRef.current = true;
+    lastFlushTimeRef.current = Date.now();
     setGraphStatus("updating");
     try {
       const res = await updateGraph(id, text);
@@ -52,8 +50,8 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
         lastGraphSizeRef.current = { nodes: newNodes, links: newLinks };
         setTranscript(updated);
       }
-    } catch {
-      // on error, put the text back for the next flush
+    } catch (e) {
+      console.error("[GRAPH] updateGraph failed:", e);
       pendingTextRef.current =
         text + (pendingTextRef.current ? " " + pendingTextRef.current : "");
     } finally {
@@ -62,11 +60,108 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     }
   }
 
-  // ── Start recording ────────────────────────────────────────────────────────
+  function commitInterim() {
+    // If Chrome never fired isFinal, save whatever interim text we last saw
+    const interim = lastInterimRef.current.trim();
+    if (interim) {
+      console.log("[STT] committing interim as final:", interim);
+      pendingTextRef.current += (pendingTextRef.current ? " " : "") + interim;
+      setTextStream((prev) => prev + (prev ? " " : "") + interim);
+      lastInterimRef.current = "";
+    }
+  }
+
+  function createRecognition() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        console.log(
+          "[STT] result",
+          i,
+          "isFinal:",
+          result.isFinal,
+          "text:",
+          result[0].transcript,
+        );
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        const trimmed = finalTranscript.trim();
+        lastInterimRef.current = "";
+        pendingTextRef.current += (pendingTextRef.current ? " " : "") + trimmed;
+        setTextStream((prev) => prev + (prev ? " " : "") + trimmed);
+        flushToGraph();
+        return;
+      }
+
+      // Rebuild full interim across ALL current result slots
+      let fullInterim = "";
+      for (let i = 0; i < event.results.length; i++) {
+        fullInterim += event.results[i][0].transcript;
+      }
+
+      // Detect Chrome silently resetting: if the new full interim is much SHORTER
+      // than what we last saw, Chrome discarded old results without firing isFinal.
+      // Treat the previous interim as finalized before overwriting.
+      const prevInterim = lastInterimRef.current.trim();
+      const currInterim = fullInterim.trim();
+      if (prevInterim && currInterim.length < prevInterim.length * 0.6) {
+        console.log("[STT] Chrome reset detected, committing:", prevInterim);
+        pendingTextRef.current +=
+          (pendingTextRef.current ? " " : "") + prevInterim;
+        setTextStream((p) => p + (p ? " " : "") + prevInterim);
+        flushToGraph();
+      }
+
+      lastInterimRef.current = currInterim;
+      setTextStream(() => {
+        const base = pendingTextRef.current;
+        return base + (base ? " " : "") + currInterim;
+      });
+    };
+
+    recognition.onend = () => {
+      if (!activeRef.current) return;
+
+      // Chrome ended without finalizing — save what we heard
+      commitInterim();
+
+      clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = setTimeout(() => {
+        if (!activeRef.current) return;
+        try {
+          recognitionRef.current = createRecognition();
+          recognitionRef.current.start();
+        } catch {
+          /* already restarting */
+        }
+      }, 1500);
+    };
+
+    recognition.onerror = (e) => {
+      if (e.error !== "no-speech" && e.error !== "aborted") {
+        console.warn("[STT] error:", e.error);
+      }
+    };
+
+    return recognition;
+  }
+
   async function startRecording() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-
     if (!SpeechRecognition) {
       alert(
         "Speech recognition is not supported in this browser. Please use Chrome or Edge.",
@@ -77,101 +172,35 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     await initializeRedis(id);
     activeRef.current = true;
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+    const recognition = createRecognition();
     recognitionRef.current = recognition;
-
-    recognition.onresult = (event) => {
-      networkErrorsRef.current = 0; // successful result resets the error counter
-      let interimTranscript = "";
-      let finalTranscript = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finalTranscript += result[0].transcript;
-        } else {
-          interimTranscript += result[0].transcript;
-        }
-      }
-
-      if (finalTranscript) {
-        const trimmed = finalTranscript.trim();
-        pendingTextRef.current += (pendingTextRef.current ? " " : "") + trimmed;
-        setTextStream((prev) => prev + (prev ? " " : "") + trimmed);
-        // Try to flush immediately after every finalised sentence
-        flushToGraph();
-      }
-
-      // Show interim text live in the stream (but don't buffer it for the graph)
-      if (interimTranscript) {
-        setTextStream((prev) => {
-          // Replace any existing interim suffix — keep only finalised text + current interim
-          const base = pendingTextRef.current;
-          return base + (base ? " " : "") + interimTranscript;
-        });
-      }
-    };
-
-    // SpeechRecognition can stop on silence — restart automatically while active.
-    // Delay prevents Chrome's rapid start→end→start loop that silently kills recognition.
-    recognition.onend = () => {
-      if (!activeRef.current) return;
-      // Back off longer after network errors; give up after 5 consecutive failures.
-      const errors = networkErrorsRef.current;
-      if (errors >= 5) {
-        stopRecording();
-        return;
-      }
-      const delay = errors > 0 ? 2000 : 300;
-      clearTimeout(restartTimerRef.current);
-      restartTimerRef.current = setTimeout(() => {
-        if (!activeRef.current) return;
-        try {
-          recognition.start();
-        } catch {
-          /* recognition already restarting */
-        }
-      }, delay);
-    };
-
-    recognition.onerror = (e) => {
-      if (e.error === "network") {
-        networkErrorsRef.current += 1;
-        console.warn(`SpeechRecognition network error (${networkErrorsRef.current}/5)`);
-      } else if (e.error !== "no-speech" && e.error !== "aborted") {
-        console.warn("SpeechRecognition error:", e.error);
-      }
-    };
-
     recognition.start();
     setIsRecording(true);
 
-    // Periodic graph flush
-    graphIntervalRef.current = setInterval(
-      () => flushToGraph(),
-      GRAPH_INTERVAL_MS,
-    );
+    // Interval flush: skip if something already flushed recently
+    graphIntervalRef.current = setInterval(() => {
+      const timeSinceLast = Date.now() - lastFlushTimeRef.current;
+      if (timeSinceLast < GRAPH_INTERVAL_MS - 2000) return;
+      flushToGraph({ force: true });
+    }, GRAPH_INTERVAL_MS);
   }
 
-  // ── Stop recording ─────────────────────────────────────────────────────────
   async function stopRecording() {
     activeRef.current = false;
-    networkErrorsRef.current = 0;
     clearTimeout(restartTimerRef.current);
     clearInterval(graphIntervalRef.current);
+
+    // Commit any unfinalized interim before stopping
+    commitInterim();
 
     recognitionRef.current?.stop();
     recognitionRef.current = null;
 
     setIsRecording(false);
-
-    // Final flush — send everything regardless of word count
     await flushToGraph({ force: true });
 
     pendingTextRef.current = "";
+    lastInterimRef.current = "";
     setTextStream("");
     await deinitializeRedis(id);
   }
@@ -190,12 +219,45 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
           onClick={isRecording ? stopRecording : startRecording}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
-          {/* Microphone icon */}
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={styles.icon}>
-            <rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" />
-            <path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-            <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            className={styles.icon}
+          >
+            <rect
+              x="9"
+              y="2"
+              width="6"
+              height="11"
+              rx="3"
+              fill="currentColor"
+            />
+            <path
+              d="M5 10a7 7 0 0 0 14 0"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <line
+              x1="12"
+              y1="17"
+              x2="12"
+              y2="21"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+            <line
+              x1="8"
+              y1="21"
+              x2="16"
+              y2="21"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
           </svg>
         </button>
       </div>
@@ -203,9 +265,22 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
       <div className={styles.status}>
         {graphStatus === "updating" ? (
           <span className={styles.updating}>
-            <svg className={styles.spinner} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.5"
-                strokeDasharray="20" strokeDashoffset="8" strokeLinecap="round" />
+            <svg
+              className={styles.spinner}
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                cx="8"
+                cy="8"
+                r="5.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeDasharray="20"
+                strokeDashoffset="8"
+                strokeLinecap="round"
+              />
             </svg>
             Mapping
           </span>
