@@ -1,6 +1,9 @@
 import datetime
+import json
+import re
 from typing import Optional
 
+import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -110,6 +113,77 @@ def update_transcript(
         class_name=transcript.class_name,
         created_at=transcript.created_at,
     )
+
+
+@transcript_router.delete(
+    "/transcripts/{transcript_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+def delete_transcript(
+    transcript_id: int,
+    database: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    transcript = database.get(Transcript, transcript_id)
+    if transcript is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found"
+        )
+    if transcript.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+        )
+    database.delete(transcript)
+    database.commit()
+
+
+class GeneratedDetails(BaseModel):
+    name: str
+    ai_summary: str
+
+
+@transcript_router.post(
+    "/transcripts/{transcript_id}/generate-details", response_model=GeneratedDetails
+)
+def generate_transcript_details(
+    transcript_id: int,
+    database: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    transcript = database.get(Transcript, transcript_id)
+    if transcript is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Transcript not found"
+        )
+    if transcript.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+        )
+
+    graph_data = get_user_transcript(transcript_id, current_user.id, database)
+
+    client = anthropic.Anthropic()
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=256,
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    "Based on the lecture data below, generate:\n"
+                    "1. A concise, descriptive title (max 8 words, no quotes)\n"
+                    "2. A 1 sentence short plain-text summary, max 50 words.\n\n"
+                    'Return ONLY valid JSON in this exact shape: {"name": "...", "ai_summary": "..."}\n\n'
+                    f"Lecture data:\n{json.dumps(graph_data)}"
+                ),
+            }
+        ],
+    )
+
+    text = message.content[0].text.strip()
+    text = re.sub(r"^```[a-z]*\n?", "", text)
+    text = re.sub(r"\n?```$", "", text.strip())
+    data = json.loads(text)
+    return GeneratedDetails(name=data["name"], ai_summary=data["ai_summary"])
 
 
 @transcript_router.get("/get-transcript")

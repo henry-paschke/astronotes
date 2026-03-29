@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import { createTranscript, listTranscripts, listClasses, updateTranscript } from "../api/transcript";
+import { createTranscript, listTranscripts, listClasses, updateTranscript, deleteTranscript, generateTranscriptDetails } from "../api/transcript";
 import NavBar from "../components/NavBar";
 import AuthGuard from "../components/AuthGuard";
 
@@ -67,6 +67,7 @@ function EditModal({ t, classes, onSave, onClose }) {
   const [classInput, setClassInput] = useState(t.class_name ?? "");
   const [classOpen, setClassOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const classRef = useRef(null);
 
@@ -83,6 +84,20 @@ function EditModal({ t, classes, onSave, onClose }) {
   const filteredClasses = classes.filter(
     (c) => c.toLowerCase().includes(classInput.toLowerCase()) && c !== classInput
   );
+
+  async function handleGenerate() {
+    setGenerating(true);
+    setError("");
+    try {
+      const data = await generateTranscriptDetails(t.id);
+      setName(data.name);
+      setSummary(data.ai_summary);
+    } catch (e) {
+      setError(e.message || "Could not generate details.");
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   async function handleSave() {
     if (!name.trim()) { setError("Name is required."); return; }
@@ -107,12 +122,17 @@ function EditModal({ t, classes, onSave, onClose }) {
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Edit Transcript</h2>
-          <button className={styles.modalClose} onClick={onClose} aria-label="Close">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
-              <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
+          <div className={styles.modalHeaderActions}>
+            <button className={styles.modalGenerate} onClick={handleGenerate} disabled={generating || saving}>
+              {generating ? "Generating…" : "Generate Details"}
+            </button>
+            <button className={styles.modalClose} onClick={onClose} aria-label="Close" disabled={generating || saving}>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
+                <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         {error && <p className={styles.modalError}>{error}</p>}
@@ -124,6 +144,7 @@ function EditModal({ t, classes, onSave, onClose }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Lecture name"
+            disabled={generating || saving}
           />
         </div>
 
@@ -163,14 +184,15 @@ function EditModal({ t, classes, onSave, onClose }) {
             onChange={(e) => setSummary(e.target.value)}
             rows={4}
             placeholder="Brief description of the lecture…"
+            disabled={generating || saving}
           />
         </div>
 
         <div className={styles.modalActions}>
-          <button className={styles.modalCancel} onClick={onClose} disabled={saving}>
+          <button className={styles.modalCancel} onClick={onClose} disabled={saving || generating}>
             Cancel
           </button>
-          <button className={styles.modalSave} onClick={handleSave} disabled={saving}>
+          <button className={styles.modalSave} onClick={handleSave} disabled={saving || generating}>
             {saving ? "Saving…" : "Save Changes"}
           </button>
         </div>
@@ -179,8 +201,40 @@ function EditModal({ t, classes, onSave, onClose }) {
   );
 }
 
+// ─── Delete confirm modal ─────────────────────────────────────────────────────
+function DeleteModal({ t, onConfirm, onClose, deleting }) {
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Delete Lecture</h2>
+          <button className={styles.modalClose} onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
+              <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <p className={styles.deleteWarning}>
+          This will permanently delete{" "}
+          <span className={styles.deleteWarningName}>{t.name}</span>{" "}
+          and all associated summaries, flashcards, presentations, and exams. This cannot be undone.
+        </p>
+        <div className={styles.modalActions}>
+          <button className={styles.modalCancel} onClick={onClose} disabled={deleting}>
+            Cancel
+          </button>
+          <button className={styles.deleteConfirmBtn} onClick={onConfirm} disabled={deleting}>
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Transcript card ──────────────────────────────────────────────────────────
-function TranscriptCard({ t, onEdit }) {
+function TranscriptCard({ t, onEdit, onDelete }) {
   const color = accentColor(t.class_name);
   const date = new Date(t.created_at).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -208,6 +262,13 @@ function TranscriptCard({ t, onEdit }) {
         <div className={styles.cardFooter}>
           <Waveform seed={t.id} color={color} />
           <div className={styles.cardActions}>
+            <button className={styles.deleteBtn} onClick={() => onDelete(t)} aria-label="Delete">
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+                <polyline points="2,4 14,4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                <path d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                <path d="M3 4l1 9a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
             <button className={styles.editBtn} onClick={() => onEdit(t)}>
               <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
                 <path d="M11.5 2.5 L13.5 4.5 L5 13 L2.5 13.5 L3 11 Z"
@@ -240,6 +301,8 @@ export default function TranscriptsPage() {
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -380,7 +443,7 @@ export default function TranscriptsPage() {
               </p>
             ) : (
               visible.map((t) => (
-                <TranscriptCard key={t.id} t={t} onEdit={setEditTarget} />
+                <TranscriptCard key={t.id} t={t} onEdit={setEditTarget} onDelete={setDeleteTarget} />
               ))
             )}
           </div>
@@ -404,6 +467,26 @@ export default function TranscriptsPage() {
           </div>
         </footer>
       </div>
+
+      {deleteTarget && (
+        <DeleteModal
+          t={deleteTarget}
+          deleting={deleting}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={async () => {
+            setDeleting(true);
+            try {
+              await deleteTranscript(deleteTarget.id);
+              setTranscripts((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+              setDeleteTarget(null);
+            } catch (e) {
+              alert(e.message);
+            } finally {
+              setDeleting(false);
+            }
+          }}
+        />
+      )}
 
       {editTarget && (
         <EditModal
