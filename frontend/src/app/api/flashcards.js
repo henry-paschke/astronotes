@@ -1,0 +1,27 @@
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+function authHeaders() {
+  const token = localStorage.getItem("astronotes_token");
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function getFlashcards(transcriptId) {
+  const res = await fetch(`${API}/api/flashcards/${transcriptId}`, {
+    headers: authHeaders(),
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to load flashcards (${res.status})`);
+  return res.json();
+}
+
+export async function generateFlashcards(transcriptId) {
+  const res = await fetch(`${API}/api/flashcards/${transcriptId}/generate`, {
+    method: "POST",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.detail || `Generation failed (${res.status})`);
+  }
+  return res.json();
+}

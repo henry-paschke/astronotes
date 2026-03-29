@@ -58,7 +58,10 @@
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 0.2s, box-shadow 0.2s, opacity 0.15s;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    opacity 0.15s;
 }
 
 .generateBtn:hover:not(:disabled) {
@@ -82,7 +85,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
@@ -215,15 +220,27 @@
 }
 
 @keyframes compassRingSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes compassNeedleSpin {
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(160deg); }
-  60%  { transform: rotate(140deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(160deg);
+  }
+  60% {
+    transform: rotate(140deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .empty {
@@ -243,4 +260,39 @@
   color: var(--parchment-dim);
   opacity: 0.4;
   margin: 0;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 24px 20px;
+    gap: 20px;
+    max-width: 100%;
+    padding-bottom: 100px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .generateBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .body {
+    padding: 20px;
+  }
+
+  .mdP {
+    font-size: 15px;
+  }
+  .mdH2 {
+    font-size: 14px;
+  }
+  .mdH3 {
+    font-size: 12px;
+  }
 }

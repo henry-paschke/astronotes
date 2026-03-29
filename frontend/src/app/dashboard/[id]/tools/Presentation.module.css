@@ -1,0 +1,578 @@
+/* ── Page wrap ───────────────────────────────────────────────────────────── */
+.wrap {
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rule {
+  width: 120px;
+  height: 12px;
+}
+
+.title {
+  font-family: var(--font-cinzel), serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--starlight);
+  margin: 0;
+  line-height: 1;
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--parchment-dim);
+  opacity: 0.5;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.generateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--gold);
+  border: none;
+  border-radius: 2px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    opacity 0.15s;
+}
+.generateBtn:hover:not(:disabled) {
+  background: var(--gold-light);
+  box-shadow: 0 0 18px rgba(196, 163, 90, 0.4);
+}
+.generateBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.presentBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: none;
+  border: 1px solid var(--border-bright);
+  border-radius: 2px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.presentBtn:hover:not(:disabled) {
+  background: rgba(196, 163, 90, 0.08);
+  border-color: var(--gold-dim);
+}
+
+.spinner {
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(2, 11, 24, 0.3);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Error / empty ───────────────────────────────────────────────────────── */
+.error {
+  font-size: 13px;
+  color: #e07070;
+  background: rgba(224, 112, 112, 0.08);
+  border: 1px solid rgba(224, 112, 112, 0.2);
+  border-radius: 2px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 64px 0;
+  text-align: center;
+}
+.empty p {
+  font-family: var(--font-cinzel), serif;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--parchment-dim);
+  opacity: 0.4;
+  margin: 0;
+}
+
+/* ── Compass spinner ─────────────────────────────────────────────────────── */
+.compassWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+}
+.compass {
+  width: 56px;
+  height: 56px;
+}
+.compassRing {
+  transform-origin: 50% 50%;
+  animation: compassRingSpin 8s linear infinite;
+}
+.compassNeedle {
+  transform-origin: 50% 50%;
+  animation: compassNeedleSpin 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes compassRingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes compassNeedleSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(160deg);
+  }
+  60% {
+    transform: rotate(140deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Browse layout ───────────────────────────────────────────────────────── */
+.browseLayout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  min-height: 480px;
+}
+
+.thumbList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 600px;
+  padding-right: 4px;
+}
+
+.thumbnail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  width: 100%;
+}
+.thumbnail:hover {
+  border-color: var(--border-bright);
+  background: rgba(196, 163, 90, 0.04);
+}
+.thumbnailActive {
+  border-color: var(--gold-dim) !important;
+  background: rgba(196, 163, 90, 0.08) !important;
+}
+
+.thumbNumber {
+  font-family: var(--font-cinzel), serif;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  flex-shrink: 0;
+}
+
+.thumbTitle {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--parchment-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ── Slide preview panel ─────────────────────────────────────────────────── */
+.preview {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 36px 40px;
+  min-height: 360px;
+  overflow: hidden;
+}
+
+/* ── Slide layout (shared by preview + present) ──────────────────────────── */
+.slideLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+  height: 100%;
+}
+
+.slideTextArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.slideTitle {
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--starlight);
+  margin: 0;
+  line-height: 1.2;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  /* never wrap to more than 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.slideBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Markdown inside slides — all clamped so bullets can't overflow */
+.mdH1 {
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(13px, 1.4vw, 18px);
+  color: var(--starlight);
+  margin: 0 0 8px;
+}
+.mdH2 {
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(11px, 1.1vw, 14px);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--gold);
+  margin: 12px 0 6px;
+}
+.mdH3 {
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(10px, 1vw, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--gold-dim);
+  margin: 10px 0 5px;
+}
+.mdP {
+  font-size: clamp(13px, 1.3vw, 15px);
+  line-height: 1.65;
+  color: var(--parchment-dim);
+  margin: 0 0 8px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.mdUl,
+.mdOl {
+  margin: 0 0 8px 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mdLi {
+  font-size: clamp(13px, 1.3vw, 15px);
+  line-height: 1.55;
+  color: var(--parchment-dim);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.mdStrong {
+  color: var(--parchment);
+  font-weight: 600;
+}
+
+/* ── Present overlay ─────────────────────────────────────────────────────── */
+.presentOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: #010810;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 120px 100px;
+  box-sizing: border-box;
+}
+
+.presentOverlay .slideLayout {
+  width: 100%;
+  max-width: 1100px;
+  max-height: calc(100vh - 180px);
+  overflow: hidden;
+}
+.presentOverlay .slideTitle {
+  font-size: clamp(24px, 3.5vw, 44px);
+  -webkit-line-clamp: 2;
+}
+.presentOverlay .mdP {
+  font-size: clamp(16px, 1.8vw, 22px);
+  line-height: 1.75;
+  -webkit-line-clamp: 2;
+}
+.presentOverlay .mdLi {
+  font-size: clamp(15px, 1.7vw, 21px);
+}
+.presentOverlay .mdUl,
+.presentOverlay .mdOl {
+  gap: 8px;
+}
+.presentOverlay .slideBody {
+  overflow: hidden;
+  max-height: calc(100vh - 280px);
+}
+
+/* Nav arrows */
+.presentArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px 10px;
+  color: var(--parchment-dim);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    opacity 0.15s;
+}
+.presentArrow:hover:not(:disabled) {
+  border-color: var(--gold-dim);
+  color: var(--parchment);
+}
+.presentArrow:disabled {
+  opacity: 0.15;
+  cursor: not-allowed;
+}
+.presentArrowLeft {
+  left: 24px;
+}
+.presentArrowRight {
+  right: 24px;
+}
+
+/* Dots */
+.presentDots {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-bright);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+.dotActive {
+  background: var(--gold);
+  transform: scale(1.4);
+}
+
+/* Counter */
+.presentCounter {
+  position: absolute;
+  bottom: 24px;
+  right: 32px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--parchment-dim);
+  opacity: 0.35;
+}
+
+/* Exit button */
+.presentExit {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+.presentExit:hover {
+  border-color: var(--border-bright);
+  color: var(--parchment);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 24px 20px;
+    gap: 20px;
+    padding-bottom: 100px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+  .generateBtn,
+  .presentBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Stack thumbnail list above preview */
+  .browseLayout {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+
+  .thumbList {
+    flex-direction: row;
+    max-height: unset;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .thumbList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .thumbnail {
+    flex-direction: column;
+    min-width: 80px;
+    max-width: 80px;
+    padding: 8px;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .thumbTitle {
+    font-size: 10px;
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-width: 100%;
+  }
+
+  .preview {
+    padding: 20px;
+    min-height: 260px;
+  }
+
+  /* Present overlay on mobile */
+  .presentOverlay {
+    padding: 64px 20px 80px;
+  }
+
+  .presentOverlay .slideTitle {
+    font-size: clamp(20px, 5vw, 30px);
+  }
+  .presentOverlay .mdP {
+    font-size: 16px;
+  }
+  .presentOverlay .mdLi {
+    font-size: 15px;
+  }
+
+  .presentArrowLeft {
+    left: 8px;
+  }
+  .presentArrowRight {
+    right: 8px;
+  }
+}

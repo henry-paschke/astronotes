@@ -76,19 +76,22 @@
   border-radius: 3px;
   cursor: pointer;
   color: var(--parchment-dim);
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
   text-align: left;
   white-space: nowrap;
 }
 
 .toolBtn:hover {
-  background: rgba(196,163,90,0.06);
+  background: rgba(196, 163, 90, 0.06);
   color: var(--parchment);
   border-color: var(--border);
 }
 
 .toolBtnActive {
-  background: rgba(196,163,90,0.1);
+  background: rgba(196, 163, 90, 0.1);
   border-color: var(--border-bright);
   color: var(--gold-light);
 }
@@ -132,7 +135,9 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .sidebarToggle:hover {
@@ -148,9 +153,12 @@
   background: var(--bg-deep);
   /* Subtle grid */
   background-image:
-    linear-gradient(rgba(196,163,90,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(196,163,90,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(196, 163, 90, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 163, 90, 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* ── Compass spinner ─────────────────────────────────────────────────────── */
@@ -181,15 +189,27 @@
 }
 
 @keyframes compassRingSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes compassNeedleSpin {
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(160deg); }
-  60%  { transform: rotate(140deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(160deg);
+  }
+  60% {
+    transform: rotate(140deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loadingLabel {
@@ -203,8 +223,113 @@
 }
 
 @keyframes labelPulse {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ── Mobile responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Stack canvas above, toolbar pinned at bottom */
+  .body {
+    flex-direction: column;
+  }
+
+  /* Sidebar → fixed bottom tab bar */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important; /* override sidebarCollapsed */
+    height: 64px;
+    flex-shrink: 0;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    z-index: 50;
+    overflow: hidden;
+  }
+
+  /* Cancel the collapse animation on mobile */
+  .sidebarCollapsed {
+    width: 100% !important;
+  }
+
+  .sidebarInner {
+    width: 100%;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .sidebarInner::-webkit-scrollbar { display: none; }
+
+  /* Hide everything inside sidebar except the tool nav */
+  .sidebarInner > *:not(.toolList) {
+    display: none;
+  }
+
+  .toolList {
+    flex-direction: row;
+    gap: 0;
+    padding: 0;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .toolList::-webkit-scrollbar { display: none; }
+
+  .toolBtn {
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 10px;
+    min-width: 58px;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0;
+    border: none;
+    border-top: 2px solid transparent;
+    white-space: nowrap;
+    height: 64px;
+  }
+
+  .toolBtnActive {
+    border-top-color: var(--gold);
+    background: rgba(196, 163, 90, 0.08);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .toolLabel {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    max-width: 56px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toolIcon { width: 22px; height: 22px; }
+  .toolIcon svg { width: 22px; height: 22px; }
+
+  /* Toggle tab hidden on mobile */
+  .sidebarToggle { display: none; }
+
+  /* Canvas fills remaining height above the tab bar */
+  .canvas {
+    flex: 1;
+    height: calc(100dvh - 64px - 64px); /* minus navbar minus tab bar */
+    padding-bottom: 0;
+  }
 }
 
 /* ── Debug / test panel ───────────────────────────────────────────────────── */
@@ -240,7 +365,7 @@
 
 .debugJson {
   margin: 0;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 12px;
   color: var(--parchment-dim);
   line-height: 1.6;
