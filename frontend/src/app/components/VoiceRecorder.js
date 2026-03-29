@@ -14,10 +14,10 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const [graphStatus, setGraphStatus] = useState(""); // "" | "updating"
 
   const recognitionRef = useRef(null);
-  const pendingTextRef = useRef("");      // text buffered since last graph flush
+  const pendingTextRef = useRef(""); // text buffered since last graph flush
   const graphUpdatingRef = useRef(false); // prevent concurrent graph calls
   const graphIntervalRef = useRef(null);
-  const activeRef = useRef(false);        // true while recording session is live
+  const activeRef = useRef(false); // true while recording session is live
   const lastGraphSizeRef = useRef({ nodes: 0, links: 0 });
 
   // ── Flush buffered text to graph ──────────────────────────────────────────
@@ -42,13 +42,17 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
       const updated = await res.json();
       const newNodes = updated?.nodes?.length ?? 0;
       const newLinks = updated?.links?.length ?? 0;
-      if (newNodes !== lastGraphSizeRef.current.nodes || newLinks !== lastGraphSizeRef.current.links) {
+      if (
+        newNodes !== lastGraphSizeRef.current.nodes ||
+        newLinks !== lastGraphSizeRef.current.links
+      ) {
         lastGraphSizeRef.current = { nodes: newNodes, links: newLinks };
         setTranscript(updated);
       }
     } catch {
       // on error, put the text back for the next flush
-      pendingTextRef.current = text + (pendingTextRef.current ? " " + pendingTextRef.current : "");
+      pendingTextRef.current =
+        text + (pendingTextRef.current ? " " + pendingTextRef.current : "");
     } finally {
       graphUpdatingRef.current = false;
       setGraphStatus("");
@@ -61,7 +65,9 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      alert(
+        "Speech recognition is not supported in this browser. Please use Chrome or Edge.",
+      );
       return;
     }
 
@@ -108,7 +114,11 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     // SpeechRecognition can stop on silence — restart automatically while active
     recognition.onend = () => {
       if (activeRef.current) {
-        try { recognition.start(); } catch { /* already started */ }
+        try {
+          recognition.start();
+        } catch {
+          /* already started */
+        }
       }
     };
 
@@ -123,7 +133,10 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     setIsRecording(true);
 
     // Periodic graph flush
-    graphIntervalRef.current = setInterval(() => flushToGraph(), GRAPH_INTERVAL_MS);
+    graphIntervalRef.current = setInterval(
+      () => flushToGraph(),
+      GRAPH_INTERVAL_MS,
+    );
   }
 
   // ── Stop recording ─────────────────────────────────────────────────────────
