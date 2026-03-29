@@ -22,3 +22,12 @@ class Transcript(SQLModel, table=True):
     )
     ai_summary: str = Field(default="No summary created yet")
     class_name: Optional[str] = Field()
+    summary: Optional["Summary"] = Relationship(back_populates="transcript")
+
+
+class Summary(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    transcript_id: int = Field(foreign_key="transcript.id", unique=True)
+    transcript: Optional["Transcript"] = Relationship(back_populates="summary")
+    content: str
+    generated_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)

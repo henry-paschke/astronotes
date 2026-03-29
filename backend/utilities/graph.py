@@ -14,8 +14,7 @@ def get_user_transcript(
     database: Session,
 ):
     if MOCK_GRAPH_PATH:
-        path = os.path.join(os.path.dirname(__file__), "..", MOCK_GRAPH_PATH)
-        with open(os.path.normpath(path), "r") as f:
+        with open(os.path.normpath(MOCK_GRAPH_PATH), "r") as f:
             return json.load(f)
 
     transcript = database.get(Transcript, transcript_id)

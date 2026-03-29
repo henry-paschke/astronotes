@@ -8,8 +8,21 @@ import styles from "./page.module.css";
 import { initializeRedis } from "@/app/api/dashboard";
 import { getTranscript } from "@/app/api/transcript";
 import VoiceRecorder from "@/app/components/VoiceRecorder";
+import MindMap from "./tools/MindMap";
+import Summary from "./tools/Summary";
+import Flashcards from "./tools/Flashcards";
+import PowerPoint from "./tools/PowerPoint";
+import Exam from "./tools/Exam";
+import Chatbot from "./tools/Chatbot";
 
-const API = "http://localhost:8000";
+const TOOL_COMPONENTS = {
+  mindmap: MindMap,
+  summary: Summary,
+  flashcards: Flashcards,
+  powerpoint: PowerPoint,
+  exam: Exam,
+  chatbot: Chatbot,
+};
 
 // ── Tool definitions ───────────────────────────────────────────────────────────
 const TOOLS = [
@@ -444,20 +457,52 @@ export default function DashboardPage() {
 
           {/* ── Canvas ── */}
           <main className={styles.canvas}>
-            {/* Testing: transcript info */}
-            <div className={styles.debugPanel}>
-              <p className={styles.debugTitle}>
-                Transcript #{id} —{" "}
-                {TOOLS.find((t) => t.id === activeTool)?.label}
-              </p>
-              {loading && <p className={styles.debugMeta}>Loading…</p>}
-              {error && <p className={styles.debugError}>{error}</p>}
-              {transcript && (
-                <pre className={styles.debugJson}>
-                  {JSON.stringify(transcript, null, 2)}
-                </pre>
-              )}
-            </div>
+            {loading && (
+              <div className={styles.loadingWrap}>
+                <svg className={styles.compass} viewBox="0 0 72 72" fill="none" aria-hidden="true">
+                  {/* Outer tick ring */}
+                  <g className={styles.compassRing}>
+                    <circle cx="36" cy="36" r="33" stroke="#c4a35a" strokeWidth="0.8" opacity="0.25" />
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const a = (i / 24) * Math.PI * 2;
+                      const major = i % 6 === 0;
+                      const r0 = major ? 29 : 30.5;
+                      const r1 = 33;
+                      return (
+                        <line
+                          key={i}
+                          x1={36 + r0 * Math.cos(a)} y1={36 + r0 * Math.sin(a)}
+                          x2={36 + r1 * Math.cos(a)} y2={36 + r1 * Math.sin(a)}
+                          stroke="#c4a35a" strokeWidth={major ? 1.2 : 0.6} opacity={major ? 0.7 : 0.35}
+                          strokeLinecap="round"
+                        />
+                      );
+                    })}
+                  </g>
+                  {/* Static inner ring */}
+                  <circle cx="36" cy="36" r="22" stroke="#c4a35a" strokeWidth="0.6" opacity="0.18" />
+                  <circle cx="36" cy="36" r="4"  stroke="#c4a35a" strokeWidth="1"   opacity="0.5" />
+                  {/* Needle */}
+                  <g className={styles.compassNeedle}>
+                    {/* North — gold */}
+                    <polygon points="36,36 33.5,36 36,14" fill="#c4a35a" opacity="0.9" />
+                    {/* South — dim */}
+                    <polygon points="36,36 38.5,36 36,58" fill="#c4a35a" opacity="0.3" />
+                  </g>
+                  {/* Cardinal letters */}
+                  <text x="36" y="9"  textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.55" letterSpacing="0.1em">N</text>
+                  <text x="36" y="65" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35" letterSpacing="0.1em">S</text>
+                  <text x="63"  y="37" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35" letterSpacing="0.1em">E</text>
+                  <text x="9"  y="37" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35" letterSpacing="0.1em">W</text>
+                </svg>
+                <span className={styles.loadingLabel}>Charting</span>
+              </div>
+            )}
+            {error && <p className={styles.debugError}>{error}</p>}
+            {!loading && !error && (() => {
+              const ActiveTool = TOOL_COMPONENTS[activeTool];
+              return <ActiveTool transcript={transcript} id={id} />;
+            })()}
           </main>
         </div>
       </div>
