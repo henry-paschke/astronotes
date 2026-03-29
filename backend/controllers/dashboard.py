@@ -15,5 +15,18 @@ async def initialize_redis(
     database: Session = Depends(get_session),
     redis_client: redis.Redis = Depends(get_redis),
 ):
-    transcript = database.get(Transcript, id)
+    transcript: Transcript = database.get(Transcript, id)
     await redis_client.set(id, transcript.data)
+
+
+@dashboard_router.post("/deinitialize-redis")
+async def deinitialize_redis(
+    id: int = Body(..., embed=True),
+    database: Session = Depends(get_session),
+    redis_client: redis.Redis = Depends(get_redis),
+):
+    transcript: Transcript = database.get(Transcript, id)
+    transcript.data = await redis_client.get(id)
+    database.add(transcript)
+    database.commit()
+    await redis_client.delete(id)

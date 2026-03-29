@@ -1,4 +1,3 @@
-import os
 import assemblyai as aai
 from fastapi import APIRouter, File, UploadFile
 from config import ASSEMBLYAI_API_KEY

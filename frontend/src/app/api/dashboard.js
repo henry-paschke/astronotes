@@ -7,3 +7,11 @@ export async function initializeRedis(id) {
     body: JSON.stringify({ id }),
   });
 }
+
+export async function deinitializeRedis(id) {
+  return await fetch(`${API}/api/deinitialize-redis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  });
+}

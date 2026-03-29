@@ -10,6 +10,7 @@ import faiss
 from typing import List
 import uuid
 
+client = anthropic.Anthropic()
 NLP = spacy.load("en_core_web_md")
 
 
@@ -35,8 +36,6 @@ NOISE includes (but is not limited to):
 - Jokes, side remarks, or off-topic tangents
 - Incomplete or unclear thoughts that do not convey real information
 
-If the input consists entirely or mostly of noise, RETURN AN EMPTY JSON ARRAY: []
-
 From the remaining meaningful content, extract a structured mind-map hierarchy with EXACTLY three levels:
 
 1. TOPIC — a broad subject (e.g. "Machine Learning", "Photosynthesis")
@@ -52,9 +51,16 @@ Rules:
     - "fact": a notable property or relationship
 - Each detail must be a FULL, grammatically correct sentence (1–2 sentences max)
 - Do NOT include fragments, keywords, or partial phrases
-- Do NOT invent or assume information — only extract what is explicitly stated
+- Do NOT invent or assume information beyond what is stated or can be reasonably inferred from prior context
 - If multiple topics exist, extract all of them
 - If structure is unclear, infer the most logical grouping based ONLY on meaningful content
+
+Using prior knowledge:
+- You will be provided with the nodes and links extracted so far in this lecture session
+- If the input is short or ambiguous, use the prior knowledge to infer which topic or subtopic it most likely belongs to
+- If the input adds to, extends, or relates to an existing topic or subtopic, reuse those exact topic/subtopic names so the graph stays connected
+- Even if the input is only 1-2 sentences, still attempt to extract nodes as long as there is any meaningful content
+- Only return [] if the input is entirely noise with absolutely no academic or conceptual value, even with prior context
 
 Example output (ONLY JSON array):
 [
@@ -70,44 +76,34 @@ Important:
 Now respond ONLY with a JSON array like the example above.
 Always produce a valid, fully closed JSON array.
 Do not truncate, and do not include partial or incomplete strings.
-If, after removing noise, there is no meaningful academic or conceptual information, RETURN: []
 Do NOT output explanations, commentary, or text outside the JSON.
+
+Prior knowledge:
 """
 
 
-def chunk_text(text: str, max_chars: int = 1200) -> list:
-    sentences = re.split(r"(?<=[.!?])\s+|\n+", text.strip())
-    chunks, current = [], ""
-    for sent in sentences:
-        if len(current) + len(sent) > max_chars and current:
-            chunks.append(current.strip())
-            current = sent
-        else:
-            current += (" " if current else "") + sent
-    if current.strip():
-        chunks.append(current.strip())
-    return chunks
-
-
-def extract_hierarchy(client, chunk: str) -> list:
+def extract_hierarchy(data, graph: GraphStateFAISSSpaCy) -> list:
     try:
+        graph.clean()
         msg = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=2048,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": chunk}],
+            system=SYSTEM_PROMPT + json.dumps(graph.cleaned),
+            messages=[{"role": "user", "content": data}],
         )
+
         print("Input tokens:", msg.usage.input_tokens)
         print("Output tokens:", msg.usage.output_tokens)
+
         raw = msg.content[0].text
         raw = re.sub(r"^```[a-z]*\n?", "", raw)
         raw = re.sub(r"\n?```$", "", raw)
-        print(raw)
+
         if not raw or raw.strip() == "[]":
             raise Exception("Claude returned empty")
         return json.loads(raw.strip())
     except Exception as e:
-        print(f"  [warn] extraction failed: {e}", file=sys.stderr)
+        print(f"[warn] extraction failed: {e}", file=sys.stderr)
         return []
 
 
@@ -204,7 +200,7 @@ class GraphState:
             )
 
     def clean(self):
-        self.cleaned = ({"nodes": list(self.nodes.values()), "links": self.edges},)
+        self.cleaned = {"nodes": list(self.nodes.values()), "links": self.edges}
 
 
 class GraphStateFAISSSpaCy(GraphState):
@@ -328,35 +324,3 @@ class GraphStateFAISSSpaCy(GraphState):
             subtopic_id,
         )
         return subtopic_id
-
-
-def fetch_graph(item, file):
-    return deserialize(item, file)
-
-
-def main():
-    client = anthropic.Anthropic()
-    graph = GraphStateFAISSSpaCy()
-
-    input_file = sys.argv[1] if len(sys.argv) > 1 else "input.txt"
-    delay = float(sys.argv[2]) if len(sys.argv) > 2 else 2
-    output = sys.argv[3] if len(sys.argv) > 3 else "graph.json"
-
-    text = Path(input_file).read_text(encoding="utf-8")
-    chunks = chunk_text(text, max_chars=900)
-    print(f"Processing {len(chunks)} chunk(s) from '{input_file}'…")
-
-    for i, chunk in enumerate(chunks, 1):
-        print(f"  Chunk {i}/{len(chunks)}…", end=" ", flush=True)
-        data = extract_hierarchy(client, chunk)
-        print(f"{len(data)} triple(s).")
-        graph.extract_data(data)
-        print(f"  → Written to {output}")
-        time.sleep(delay)
-
-    graph.write(output)
-    print(f"\nDone — {len(graph.nodes)} nodes, {len(graph.edges)} edges → {output}")
-
-
-if __name__ == "__main__":
-    main()
