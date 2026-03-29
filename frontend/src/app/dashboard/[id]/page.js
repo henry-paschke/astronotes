@@ -16,16 +16,6 @@ import Chatbot from "./tools/Chatbot";
 import MindMapWrapper from "./tools/MindmapWrapper";
 import Settings from "./tools/Settings";
 
-const TOOL_COMPONENTS = {
-  mindmap: MindMap,
-  summary: Summary,
-  flashcards: Flashcards,
-  powerpoint: PowerPoint,
-  exam: Exam,
-  chatbot: Chatbot,
-  settings: Settings,
-};
-
 // ── Tool definitions ───────────────────────────────────────────────────────────
 const TOOLS = [
   {

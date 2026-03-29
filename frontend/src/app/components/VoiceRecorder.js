@@ -14,90 +14,78 @@ export default function VoiceRecorder({
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
+  const accumulatedTextRef = useRef("");
   const transcribeIntervalRef = useRef(null);
   const graphIntervalRef = useRef(null);
-  const accumulatedTextRef = useRef("");
-  const isSendingRef = useRef(false);
 
-  const sendChunk = async (blob) => {
+  const transcribeBlob = async (blob) => {
+    if (blob.size === 0) return;
     const formData = new FormData();
     formData.append("file", blob, "recording.webm");
-    const response = await fetch("http://127.0.0.1:8000/api/transcribe", {
+    const res = await fetch("http://127.0.0.1:8000/api/transcribe", {
       method: "POST",
       body: formData,
     });
-    const data = await response.json();
+    const data = await res.json();
     if (!data?.text) return;
-
     accumulatedTextRef.current += " " + data.text;
     setTextStream((prev) => prev + " " + data.text);
   };
 
+  const flushRecorder = () =>
+    new Promise((resolve) => {
+      const chunks = [];
+      const mr = mediaRecorderRef.current;
+      mr.ondataavailable = (e) => chunks.push(e.data);
+      mr.onstop = () => resolve(new Blob(chunks, { type: "audio/webm" }));
+      mr.stop();
+    });
+
   const sendToGraph = async () => {
-    if (isSendingRef.current) return;
     const text = accumulatedTextRef.current.trim();
     if (!text) return;
-
-    isSendingRef.current = true;
-    try {
-      console.log("Sending to graph: " + text);
-      const graphResponse = await updateGraph(id, text);
-      const updatedNodes = await graphResponse.json();
-      console.log(updatedNodes);
-      setTranscript(updatedNodes);
-    } finally {
-      isSendingRef.current = false;
-    }
+    console.log("sending to graph: " + text);
+    const res = await updateGraph(id, text);
+    const nodes = await res.json();
+    setTranscript(nodes);
   };
 
   const startRecording = async () => {
     await initializeRedis(id);
-    console.log("graph initialized");
-
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    const chunks = [];
 
-    mediaRecorderRef.current.ondataavailable = (e) => chunks.push(e.data);
-    mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(chunks, { type: "audio/webm" });
-      chunks.length = 0;
-      sendChunk(blob);
+    const startFresh = () => {
+      const mr = new MediaRecorder(stream);
+      const chunks = [];
+      mr.ondataavailable = (e) => chunks.push(e.data);
+      mr.onstop = async () => {
+        await transcribeBlob(new Blob(chunks, { type: "audio/webm" }));
+      };
+      mr.start();
+      mediaRecorderRef.current = mr;
     };
 
-    mediaRecorderRef.current.start();
+    startFresh();
     setIsRecording(true);
 
-    // Process 1: audio -> text every n seconds
     transcribeIntervalRef.current = setInterval(() => {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.start();
+      mediaRecorderRef.current.stop(); // triggers onstop -> transcribeBlob
+      startFresh(); // immediately start new recorder
     }, transcribeIntervalSeconds * 1000);
 
-    // Process 2: text -> llm every n seconds
-    graphIntervalRef.current = setInterval(() => {
-      sendToGraph();
-    }, graphIntervalSeconds * 1000);
+    graphIntervalRef.current = setInterval(
+      sendToGraph,
+      graphIntervalSeconds * 1000,
+    );
   };
 
   const stopRecording = async () => {
     clearInterval(transcribeIntervalRef.current);
     clearInterval(graphIntervalRef.current);
-
-    // capture final chunk then send everything
-    await new Promise((resolve) => {
-      mediaRecorderRef.current.onstop = async () => {
-        const chunks = chunksRef.current;
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        chunksRef.current = [];
-        await sendChunk(blob);
-        resolve();
-      };
-      mediaRecorderRef.current.stop();
-    });
-
+    const blob = await flushRecorder();
     mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
     setIsRecording(false);
+    await transcribeBlob(blob);
     await sendToGraph();
     accumulatedTextRef.current = "";
     setTextStream("");
