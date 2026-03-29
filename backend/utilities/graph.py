@@ -1,7 +1,11 @@
+import json
+import os
+
 from database.models import Transcript
 from sqlmodel import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from utilities.serialize import deserialize
+from config import MOCK_GRAPH_PATH
 
 
 def get_user_transcript(
@@ -9,6 +13,10 @@ def get_user_transcript(
     user_id: int,
     database: Session,
 ):
+    if MOCK_GRAPH_PATH:
+        with open(os.path.normpath(MOCK_GRAPH_PATH), "r") as f:
+            return json.load(f)
+
     transcript = database.get(Transcript, transcript_id)
     if transcript is None:
         raise HTTPException(

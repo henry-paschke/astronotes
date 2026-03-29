@@ -153,6 +153,60 @@
   background-size: 40px 40px;
 }
 
+/* ── Compass spinner ─────────────────────────────────────────────────────── */
+.loadingWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  pointer-events: none;
+}
+
+.compass {
+  width: 72px;
+  height: 72px;
+}
+
+.compassRing {
+  transform-origin: 50% 50%;
+  animation: compassRingSpin 8s linear infinite;
+}
+
+.compassNeedle {
+  transform-origin: 50% 50%;
+  animation: compassNeedleSpin 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes compassRingSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes compassNeedleSpin {
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(160deg); }
+  60%  { transform: rotate(140deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingLabel {
+  font-family: var(--font-cinzel), serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  opacity: 0.7;
+  animation: labelPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes labelPulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.9; }
+}
+
 /* ── Debug / test panel ───────────────────────────────────────────────────── */
 .debugPanel {
   margin: 40px;
