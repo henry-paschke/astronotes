@@ -1,7 +1,6 @@
-const API = "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export async function initializeRedis(id) {
-  console.log(id);
   return await fetch(`${API}/api/initialize-redis`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

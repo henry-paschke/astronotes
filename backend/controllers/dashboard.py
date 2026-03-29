@@ -15,6 +15,5 @@ async def initialize_redis(
     database: Session = Depends(get_session),
     redis_client: redis.Redis = Depends(get_redis),
 ):
-    print("\n\n", id, "\n\n")
     transcript = database.get(Transcript, id)
     await redis_client.set(id, transcript.data)

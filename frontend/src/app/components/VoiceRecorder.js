@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 export default function VoiceRecorder({
   textStream,
   setTextStream,
-  intervalSeconds = 5,
+  intervalSeconds = 1,
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
@@ -14,11 +14,11 @@ export default function VoiceRecorder({
   const sendChunk = async (blob) => {
     const formData = new FormData();
     formData.append("file", blob, "recording.webm");
-    // const response = await fetch("http://127.0.0.1:8000/api/transcribe", {
-    //   method: "POST",
-    //   body: formData,
-    // });
-    // const data = await response.json();
+    const response = await fetch("http://127.0.0.1:8000/api/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
     setTextStream((prev) => prev + " " + data.text);
   };
 
