@@ -5,7 +5,7 @@ load_dotenv()
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
-CORS_ORIGIN = os.getenv("CORS_ORIGIN", "http://localhost:3000")
+CORS_ORIGINS = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",") if o.strip()]
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 MOCK_GRAPH_PATH = os.getenv("MOCK_GRAPH_PATH")
 REDIS_HOST = os.environ["REDIS_HOST"]

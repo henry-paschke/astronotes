@@ -1,4 +1,4 @@
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = (process.env.NEXT_PUBLIC_API_URL || "").replace(/[/]$/, "");
 
 export async function getMe(token) {
   const res = await fetch(`${API}/api/users/me`, {
