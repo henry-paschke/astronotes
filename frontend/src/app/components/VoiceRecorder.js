@@ -4,112 +4,159 @@ import { useRef, useState } from "react";
 import { deinitializeRedis, initializeRedis } from "../api/dashboard";
 import { updateGraph } from "../api/mindmap";
 
-export default function VoiceRecorder({
-  textStream,
-  setTextStream,
-  transcribeIntervalSeconds = 5,
-  graphIntervalSeconds = 15,
-  id,
-  setTranscript,
-}) {
+// Minimum words buffered before sending to graph mid-recording
+const MIN_GRAPH_WORDS = 8;
+// How often to flush to graph regardless of buffer size (ms)
+const GRAPH_INTERVAL_MS = 8_000;
+
+export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const transcribeIntervalRef = useRef(null);
+  const [graphStatus, setGraphStatus] = useState(""); // "" | "updating"
+
+  const recognitionRef = useRef(null);
+  const pendingTextRef = useRef("");      // text buffered since last graph flush
+  const graphUpdatingRef = useRef(false); // prevent concurrent graph calls
   const graphIntervalRef = useRef(null);
-  const accumulatedTextRef = useRef("");
-  const isSendingRef = useRef(false);
+  const activeRef = useRef(false);        // true while recording session is live
+  const lastGraphSizeRef = useRef({ nodes: 0, links: 0 });
 
-  const sendChunk = async (blob) => {
-    const formData = new FormData();
-    formData.append("file", blob, "recording.webm");
-    const response = await fetch("http://127.0.0.1:8000/api/transcribe", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
-    if (!data?.text) return;
-
-    accumulatedTextRef.current += " " + data.text;
-    setTextStream((prev) => prev + " " + data.text);
-  };
-
-  const sendToGraph = async () => {
-    if (isSendingRef.current) return;
-    const text = accumulatedTextRef.current.trim();
-    if (!text) return;
-
-    isSendingRef.current = true;
-    try {
-      console.log("Sending to graph: " + text);
-      const graphResponse = await updateGraph(id, text);
-      const updatedNodes = await graphResponse.json();
-      console.log(updatedNodes);
-      setTranscript(updatedNodes);
-    } finally {
-      isSendingRef.current = false;
+  // ── Flush buffered text to graph ──────────────────────────────────────────
+  async function flushToGraph({ force = false } = {}) {
+    if (graphUpdatingRef.current) {
+      if (!force) return;
+      // Force flush: wait for the in-progress update to finish first
+      while (graphUpdatingRef.current) {
+        await new Promise((r) => setTimeout(r, 100));
+      }
     }
-  };
+    const words = pendingTextRef.current.trim().split(/\s+/).filter(Boolean);
+    if (!force && words.length < MIN_GRAPH_WORDS) return;
+    if (words.length === 0) return;
 
-  const startRecording = async () => {
+    const text = pendingTextRef.current.trim();
+    pendingTextRef.current = "";
+    graphUpdatingRef.current = true;
+    setGraphStatus("updating");
+    try {
+      const res = await updateGraph(id, text);
+      const updated = await res.json();
+      const newNodes = updated?.nodes?.length ?? 0;
+      const newLinks = updated?.links?.length ?? 0;
+      if (newNodes !== lastGraphSizeRef.current.nodes || newLinks !== lastGraphSizeRef.current.links) {
+        lastGraphSizeRef.current = { nodes: newNodes, links: newLinks };
+        setTranscript(updated);
+      }
+    } catch {
+      // on error, put the text back for the next flush
+      pendingTextRef.current = text + (pendingTextRef.current ? " " + pendingTextRef.current : "");
+    } finally {
+      graphUpdatingRef.current = false;
+      setGraphStatus("");
+    }
+  }
+
+  // ── Start recording ────────────────────────────────────────────────────────
+  async function startRecording() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
     await initializeRedis(id);
-    console.log("graph initialized");
+    activeRef.current = true;
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    const chunks = [];
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognitionRef.current = recognition;
 
-    mediaRecorderRef.current.ondataavailable = (e) => chunks.push(e.data);
-    mediaRecorderRef.current.onstop = () => {
-      const blob = new Blob(chunks, { type: "audio/webm" });
-      chunks.length = 0;
-      sendChunk(blob);
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        } else {
+          interimTranscript += result[0].transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        const trimmed = finalTranscript.trim();
+        pendingTextRef.current += (pendingTextRef.current ? " " : "") + trimmed;
+        setTextStream((prev) => prev + (prev ? " " : "") + trimmed);
+        // Try to flush immediately after every finalised sentence
+        flushToGraph();
+      }
+
+      // Show interim text live in the stream (but don't buffer it for the graph)
+      if (interimTranscript) {
+        setTextStream((prev) => {
+          // Replace any existing interim suffix — keep only finalised text + current interim
+          const base = pendingTextRef.current;
+          return base + (base ? " " : "") + interimTranscript;
+        });
+      }
     };
 
-    mediaRecorderRef.current.start();
+    // SpeechRecognition can stop on silence — restart automatically while active
+    recognition.onend = () => {
+      if (activeRef.current) {
+        try { recognition.start(); } catch { /* already started */ }
+      }
+    };
+
+    recognition.onerror = (e) => {
+      // "no-speech" and "aborted" are expected — ignore them
+      if (e.error !== "no-speech" && e.error !== "aborted") {
+        console.warn("SpeechRecognition error:", e.error);
+      }
+    };
+
+    recognition.start();
     setIsRecording(true);
 
-    // Process 1: audio -> text every n seconds
-    transcribeIntervalRef.current = setInterval(() => {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.start();
-    }, transcribeIntervalSeconds * 1000);
+    // Periodic graph flush
+    graphIntervalRef.current = setInterval(() => flushToGraph(), GRAPH_INTERVAL_MS);
+  }
 
-    // Process 2: text -> llm every n seconds
-    graphIntervalRef.current = setInterval(() => {
-      sendToGraph();
-    }, graphIntervalSeconds * 1000);
-  };
-
-  const stopRecording = async () => {
-    clearInterval(transcribeIntervalRef.current);
+  // ── Stop recording ─────────────────────────────────────────────────────────
+  async function stopRecording() {
+    activeRef.current = false;
     clearInterval(graphIntervalRef.current);
 
-    // capture final chunk then send everything
-    await new Promise((resolve) => {
-      mediaRecorderRef.current.onstop = async () => {
-        const chunks = chunksRef.current;
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        chunksRef.current = [];
-        await sendChunk(blob);
-        resolve();
-      };
-      mediaRecorderRef.current.stop();
-    });
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
 
-    mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
     setIsRecording(false);
-    await sendToGraph();
-    accumulatedTextRef.current = "";
+
+    // Final flush — send everything regardless of word count
+    await flushToGraph({ force: true });
+
+    pendingTextRef.current = "";
     setTextStream("");
     await deinitializeRedis(id);
-  };
+  }
+
+  const label = isRecording
+    ? graphStatus === "updating"
+      ? "Updating…"
+      : "Stop"
+    : "Record";
 
   return (
-    <div>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? "Stop" : "Start"}
-      </button>
-      <p>{textStream}</p>
-    </div>
+    <button
+      className={isRecording ? "recording" : ""}
+      onClick={isRecording ? stopRecording : startRecording}
+      aria-label={label}
+    >
+      {label}
+    </button>
   );
 }

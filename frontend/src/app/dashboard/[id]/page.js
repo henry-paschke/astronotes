@@ -14,17 +14,11 @@ import PowerPoint from "./tools/PowerPoint";
 import Exam from "./tools/Exam";
 import Chatbot from "./tools/Chatbot";
 import MindMapWrapper from "./tools/MindmapWrapper";
-import Settings from "./tools/Settings";
 
-const TOOL_COMPONENTS = {
-  mindmap: MindMap,
-  summary: Summary,
-  flashcards: Flashcards,
-  powerpoint: PowerPoint,
-  exam: Exam,
-  chatbot: Chatbot,
-  settings: Settings,
-};
+// Stable wrapper so React never unmounts MindMap due to a changing function reference
+function MindMapTool({ transcript }) {
+  return <MindMapWrapper graph={transcript} />;
+}
 
 // ── Tool definitions ───────────────────────────────────────────────────────────
 const TOOLS = [
@@ -409,7 +403,7 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
 
   const TOOL_COMPONENTS = {
-    mindmap: () => <MindMapWrapper graph={transcript} />,
+    mindmap: MindMapTool,
     summary: Summary,
     flashcards: Flashcards,
     powerpoint: PowerPoint,

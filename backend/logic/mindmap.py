@@ -25,42 +25,35 @@ TOPIC_COLORS = [
     "#A8B8FF",
 ]
 
-SYSTEM_PROMPT = """You are a knowledge extraction engine.
+SYSTEM_PROMPT = """You are a knowledge extraction engine for a live lecture transcription tool.
 
-Your task is to extract ONLY meaningful academic or conceptual content from the input text and ignore ALL noise.
+Your task is to extract academic and conceptual content from the input text and build a mind-map hierarchy.
 
-NOISE includes (but is not limited to):
-- Filler words (e.g., "um", "uh", "like")
-- Background chatter or student interruptions
-- Comments about the lecturer, students, or classroom environment
-- Jokes, side remarks, or off-topic tangents
-- Incomplete or unclear thoughts that do not convey real information
+Strip filler words (um, uh, like, you know), false starts, and pure classroom admin (e.g. "any questions?", "see you next week"). Everything else — even if phrased loosely or incompletely — likely contains extractable information.
 
-From the remaining meaningful content, extract a structured mind-map hierarchy with EXACTLY three levels:
+Extract a three-level hierarchy:
 
 1. TOPIC — a broad subject (e.g. "Machine Learning", "Photosynthesis")
 2. SUBTOPIC — a specific concept under each topic
-3. DETAIL — one concrete, complete sentence under the subtopic
+3. DETAIL — a concise, informative sentence about the subtopic
 
 Rules:
-- A topic may have multiple subtopics
-- A subtopic may have multiple details
+- A topic may have multiple subtopics; a subtopic may have multiple details
 - Each detail must be ONE of:
     - "definition": explains what something is
     - "example": a concrete instance or application
     - "fact": a notable property or relationship
-- Each detail must be a FULL, grammatically correct sentence (1–2 sentences max)
-- Do NOT include fragments, keywords, or partial phrases
-- Do NOT invent or assume information beyond what is stated or can be reasonably inferred from prior context
+- Details should be complete sentences, but you MAY rephrase or reconstruct a fragment into a clean sentence if the meaning is clear
+- If the input only names a concept without elaboration, create a topic/subtopic node with a brief factual detail inferred from the concept name and prior context
+- Do NOT invent facts not supported by the input or prior context
 - If multiple topics exist, extract all of them
-- If structure is unclear, infer the most logical grouping based ONLY on meaningful content
 
 Using prior knowledge:
-- You will be provided with the nodes and links extracted so far in this lecture session
-- If the input is short or ambiguous, use the prior knowledge to infer which topic or subtopic it most likely belongs to
-- If the input adds to, extends, or relates to an existing topic or subtopic, reuse those exact topic/subtopic names so the graph stays connected
-- Even if the input is only 1-2 sentences, still attempt to extract nodes as long as there is any meaningful content
-- Only return [] if the input is entirely noise with absolutely no academic or conceptual value, even with prior context
+- Prior knowledge contains all nodes extracted so far in this session
+- Always check prior knowledge first — if the input relates to an existing topic or subtopic, reuse those EXACT names so the graph stays connected
+- If the input is short or ambiguous, lean on prior knowledge to place it correctly
+- Strongly prefer extracting SOMETHING over returning []
+- Only return [] when the entire input is pure noise (filler, greetings, off-topic chatter) with zero conceptual content even after consulting prior knowledge
 
 Example output (ONLY JSON array):
 [
@@ -72,17 +65,13 @@ Example output (ONLY JSON array):
   }
 ]
 
-Important:
-Now respond ONLY with a JSON array like the example above.
-Always produce a valid, fully closed JSON array.
-Do not truncate, and do not include partial or incomplete strings.
-Do NOT output explanations, commentary, or text outside the JSON.
+Respond ONLY with a valid, fully closed JSON array. No explanations or text outside the JSON.
 
 Prior knowledge:
 """
 
 
-def extract_hierarchy(data, graph: GraphStateFAISSSpaCy) -> list:
+def extract_hierarchy(data, graph: "GraphStateFAISSSpaCy") -> list:
     try:
         graph.clean()
         msg = client.messages.create(
