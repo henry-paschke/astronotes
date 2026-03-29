@@ -271,8 +271,7 @@
   }
   .sidebarInner::-webkit-scrollbar { display: none; }
 
-  /* Hide everything inside sidebar except the tool nav */
-  .sidebarInner > *:not(.toolList) {
+  .sidebarHeader {
     display: none;
   }
 
