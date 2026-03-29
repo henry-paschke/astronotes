@@ -651,9 +651,9 @@ export default function Home() {
               Astro<span className={styles.titleAccent}>Notes</span>
             </h1>
             <p className={styles.heroTagline}>
-              Chart the cosmos of knowledge. Record lectures, forge
-              constellation mind&#8209;maps, and wield celestial study tools
-              &mdash; all in one instrument.
+              Map your knowledge clearly. Record lectures, turn them into
+              structured mind maps, and use built-in tools to study more
+              effectively — all in one place.
             </p>
             <div className={styles.heroCtas}>
               <a href="/login" className={styles.ctaPrimary}>
@@ -679,9 +679,7 @@ export default function Home() {
                 View Instruments
               </a>
             </div>
-            <p className={styles.heroSub}>
-              No account required &mdash; begin your expedition now
-            </p>
+            <p className={styles.heroSub}>Begin your expedition now</p>
           </div>
 
           <div className={styles.heroAstrolabe}>
@@ -857,20 +855,7 @@ export default function Home() {
             </svg>
             <span className={styles.footerBrandName}>AstroNotes</span>
           </div>
-          <ul className={styles.footerLinks}>
-            <li>
-              <a href="#">Features</a>
-            </li>
-            <li>
-              <a href="#">About</a>
-            </li>
-            <li>
-              <a href="#">Privacy</a>
-            </li>
-            <li>
-              <a href="#">Terms</a>
-            </li>
-          </ul>
+
           <p className={styles.footerCopy}>
             &copy; 2026 AstroNotes &mdash; Chart your course
           </p>
