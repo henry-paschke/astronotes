@@ -7,6 +7,7 @@ import AuthGuard from "../../components/AuthGuard";
 import styles from "./page.module.css";
 import { initializeRedis } from "@/app/api/dashboard";
 import { getTranscript } from "@/app/api/transcript";
+import VoiceRecorder from "@/app/components/VoiceRecorder";
 
 const API = "http://localhost:8000";
 
@@ -367,6 +368,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState("mindmap");
   const [transcript, setTranscript] = useState(null);
+  const [textStream, setTextStream] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -394,6 +396,10 @@ export default function DashboardPage() {
           >
             <div className={styles.sidebarInner}>
               <button onClick={() => initialize()}>Hellooooooooooooooo</button>
+              <VoiceRecorder
+                textStream={textStream}
+                setTextStream={setTextStream}
+              ></VoiceRecorder>
               <div className={styles.sidebarHeader}>
                 <span className={styles.sidebarLabel}>Tools</span>
               </div>
