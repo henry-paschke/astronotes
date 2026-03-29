@@ -1,25 +1,23 @@
-# import os
-# import tempfile
-# import whisper
-
+import os
+import assemblyai as aai
 from fastapi import APIRouter, File, UploadFile
+from config import ASSEMBLYAI_API_KEY
 
-# model = whisper.load_model("base")
-
+aai.settings.api_key = ASSEMBLYAI_API_KEY
 
 audio_router = APIRouter(prefix="/api")
 
 
-# @audio_router.post("/transcribe")
-# async def transcribe(file: UploadFile = File(...)):
-#     data = await file.read()
+@audio_router.post("/transcribe")
+async def transcribe(file: UploadFile = File(...)):
+    data = await file.read()
 
-#     # Write to temp file — whisper needs a file path
-#     with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
-#         tmp.write(data)
-#         tmp_path = tmp.name
+    transcriber = aai.Transcriber()
+    transcript = transcriber.transcribe(
+        data,
+        config=aai.TranscriptionConfig(
+            speech_models=["universal-3-pro"],
+        ),
+    )
 
-#     result = model.transcribe(tmp_path)
-#     os.remove(tmp_path)
-
-#     return {"text": result["text"]}
+    return {"text": transcript.text}

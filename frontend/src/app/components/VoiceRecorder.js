@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 export default function VoiceRecorder({
   textStream,
   setTextStream,
-  intervalSeconds = 1,
+  intervalSeconds = 5,
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
@@ -19,6 +19,10 @@ export default function VoiceRecorder({
       body: formData,
     });
     const data = await response.json();
+    if (data == null || data.text == null) {
+      console.log(data);
+      return;
+    }
     setTextStream((prev) => prev + " " + data.text);
   };
 
