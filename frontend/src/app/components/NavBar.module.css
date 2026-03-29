@@ -118,3 +118,23 @@
 .navSignOut:hover {
   color: var(--gold-light);
 }
+
+@media (max-width: 480px) {
+  .nav {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  /* Hide text, keep mark */
+  .navLogoText { display: none; }
+
+  /* Tighten all nav items */
+  .navLink,
+  .navUser,
+  .navSignOut { padding: 8px 8px; }
+
+  .navCta { padding: 8px 12px; }
+
+  /* Hide "Transcripts" link — username + sign out is enough */
+  .navLink:not(.navCta) { display: none; }
+}

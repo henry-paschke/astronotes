@@ -226,7 +226,7 @@ const TOOLS = [
   },
   {
     id: "powerpoint",
-    label: "PowerPoint",
+    label: "Presentation",
     icon: (
       <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
         <rect
