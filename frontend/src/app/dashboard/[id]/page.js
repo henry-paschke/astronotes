@@ -381,7 +381,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTool, setActiveTool] = useState("mindmap");
   const [transcript, setTranscript] = useState(null);
-  const [textStream, setTextStream] = useState(null);
+  const [textStream, setTextStream] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

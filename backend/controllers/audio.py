@@ -1,17 +1,25 @@
-from fastapi import APIRouter, Body, Depends
-from sqlmodel import Session
-from database.models import Transcript
-from database.engine import get_session
-from utilities.redis import get_redis
-import redis.asyncio as redis
+# import os
+# import tempfile
+# import whisper
+
+from fastapi import APIRouter, File, UploadFile
+
+# model = whisper.load_model("base")
 
 
 audio_router = APIRouter(prefix="/api")
 
 
-@audio_router.post("/transcribe")
-async def transcribe(
-    data: bytes = Body(..., embed=True),
-):
-    print("\n\n", data, "\n\n")
-    return {"text": "hello"}
+# @audio_router.post("/transcribe")
+# async def transcribe(file: UploadFile = File(...)):
+#     data = await file.read()
+
+#     # Write to temp file — whisper needs a file path
+#     with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
+#         tmp.write(data)
+#         tmp_path = tmp.name
+
+#     result = model.transcribe(tmp_path)
+#     os.remove(tmp_path)
+
+#     return {"text": result["text"]}
