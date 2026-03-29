@@ -5,7 +5,7 @@ import { deinitializeRedis, initializeRedis } from "../api/dashboard";
 import { updateGraph } from "../api/mindmap";
 import styles from "./VoiceRecorder.module.css";
 
-const MIN_GRAPH_WORDS = 10;
+const MIN_GRAPH_WORDS = 16;
 const GRAPH_INTERVAL_MS = 10_000;
 
 export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
@@ -28,6 +28,8 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
       while (graphUpdatingRef.current)
         await new Promise((r) => setTimeout(r, 100));
     }
+    // Always scoop up whatever interim Chrome has heard so the interval never sees 0 words
+    commitInterim();
     const words = pendingTextRef.current.trim().split(/\s+/).filter(Boolean);
     console.log("[GRAPH] flush called, words:", words.length, "force:", force);
     if (!force && words.length < MIN_GRAPH_WORDS) return;
@@ -102,7 +104,6 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
         lastInterimRef.current = "";
         pendingTextRef.current += (pendingTextRef.current ? " " : "") + trimmed;
         setTextStream((prev) => prev + (prev ? " " : "") + trimmed);
-        flushToGraph();
         return;
       }
 
@@ -122,7 +123,6 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
         pendingTextRef.current +=
           (pendingTextRef.current ? " " : "") + prevInterim;
         setTextStream((p) => p + (p ? " " : "") + prevInterim);
-        flushToGraph();
       }
 
       lastInterimRef.current = currInterim;
@@ -147,7 +147,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
         } catch {
           /* already restarting */
         }
-      }, 1500);
+      }, 300);
     };
 
     recognition.onerror = (e) => {
