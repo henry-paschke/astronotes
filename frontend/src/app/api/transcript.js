@@ -1,4 +1,4 @@
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = (process.env.NEXT_PUBLIC_API_URL || "").replace(/[/]$/, "");
 
 function authHeaders() {
   const token = localStorage.getItem("astronotes_token");
@@ -36,6 +36,29 @@ export async function getTranscript(id) {
   if (res.status === 404) throw new Error("Transcript not found.");
   if (!res.ok) throw new Error(`Unexpected error (${res.status})`);
   return res.json();
+}
+
+export async function generateTranscriptDetails(id) {
+  const res = await fetch(`${API}/api/transcripts/${id}/generate-details`, {
+    method: "POST",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.detail || `Generation failed (${res.status})`);
+  }
+  return res.json(); // { name, ai_summary }
+}
+
+export async function deleteTranscript(id) {
+  const res = await fetch(`${API}/api/transcripts/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error(d.detail || "Delete failed.");
+  }
 }
 
 export async function updateTranscript(id, body) {

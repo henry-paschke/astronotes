@@ -410,6 +410,29 @@
   gap: 8px;
 }
 
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-family: var(--font-cinzel), serif;
+  color: var(--parchment-dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+
+.deleteBtn:hover {
+  color: #e07070;
+  border-color: rgba(224, 112, 112, 0.4);
+  background: rgba(224, 112, 112, 0.06);
+  opacity: 1;
+}
+
 .editBtn {
   display: inline-flex;
   align-items: center;
@@ -485,7 +508,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
+
+.modalHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.modalGenerate {
+  font-family: var(--font-cinzel), serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--gold);
+  border: none;
+  border-radius: 2px;
+  padding: 7px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.modalGenerate:hover:not(:disabled) {
+  background: var(--gold-light);
+  box-shadow: 0 0 14px rgba(196, 163, 90, 0.35);
+}
+.modalGenerate:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .modalTitle {
   font-family: var(--font-cinzel), serif;
@@ -603,6 +654,40 @@
 
 .modalSave:disabled,
 .modalCancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.deleteWarning {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--parchment-dim);
+  margin: 0;
+}
+
+.deleteWarningName {
+  font-family: var(--font-cinzel), serif;
+  color: var(--starlight);
+  font-size: 14px;
+}
+
+.deleteConfirmBtn {
+  font-family: var(--font-cinzel), serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #9b3a3a;
+  border: none;
+  border-radius: 2px;
+  padding: 9px 22px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.deleteConfirmBtn:hover:not(:disabled) {
+  background: #b54444;
+  box-shadow: 0 0 16px rgba(155, 58, 58, 0.4);
+}
+
+.deleteConfirmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Class combobox ──────────────────────────────────────────────────────── */
 .comboWrap {

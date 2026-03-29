@@ -14,6 +14,17 @@ import PowerPoint from "./tools/PowerPoint";
 import Exam from "./tools/Exam";
 import Chatbot from "./tools/Chatbot";
 import MindMapWrapper from "./tools/MindmapWrapper";
+import Settings from "./tools/Settings";
+
+const TOOL_COMPONENTS = {
+  mindmap: MindMap,
+  summary: Summary,
+  flashcards: Flashcards,
+  powerpoint: PowerPoint,
+  exam: Exam,
+  chatbot: Chatbot,
+  settings: Settings,
+};
 
 // ── Tool definitions ───────────────────────────────────────────────────────────
 const TOOLS = [
@@ -361,6 +372,27 @@ const TOOLS = [
         <circle cx="11" cy="12" r="1.5" fill="currentColor" opacity="0.7" />
         <circle cx="16" cy="12" r="1.5" fill="currentColor" opacity="0.7" />
         <circle cx="21" cy="12" r="1.5" fill="currentColor" opacity="0.7" />
+      </svg>
+    ),
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: (
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle
+          cx="16"
+          cy="16"
+          r="3.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
+        <path
+          d="M16 4.5v3M16 24.5v3M4.5 16h3M24.5 16h3M7.9 7.9l2.1 2.1M22 22l2.1 2.1M7.9 24.1l2.1-2.1M22 10l2.1-2.1"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
