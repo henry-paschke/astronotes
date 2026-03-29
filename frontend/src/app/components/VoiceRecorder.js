@@ -21,6 +21,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const activeRef = useRef(false); // true while recording session is live
   const lastGraphSizeRef = useRef({ nodes: 0, links: 0 });
   const restartTimerRef = useRef(null); // debounce recognition restarts
+  const networkErrorsRef = useRef(0);  // consecutive network errors
 
   // ── Flush buffered text to graph ──────────────────────────────────────────
   async function flushToGraph({ force = false } = {}) {
@@ -83,6 +84,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     recognitionRef.current = recognition;
 
     recognition.onresult = (event) => {
+      networkErrorsRef.current = 0; // successful result resets the error counter
       let interimTranscript = "";
       let finalTranscript = "";
 
@@ -117,6 +119,13 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     // Delay prevents Chrome's rapid start→end→start loop that silently kills recognition.
     recognition.onend = () => {
       if (!activeRef.current) return;
+      // Back off longer after network errors; give up after 5 consecutive failures.
+      const errors = networkErrorsRef.current;
+      if (errors >= 5) {
+        stopRecording();
+        return;
+      }
+      const delay = errors > 0 ? 2000 : 300;
       clearTimeout(restartTimerRef.current);
       restartTimerRef.current = setTimeout(() => {
         if (!activeRef.current) return;
@@ -125,12 +134,14 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
         } catch {
           /* recognition already restarting */
         }
-      }, 300);
+      }, delay);
     };
 
     recognition.onerror = (e) => {
-      // "no-speech" and "aborted" are expected — ignore them
-      if (e.error !== "no-speech" && e.error !== "aborted") {
+      if (e.error === "network") {
+        networkErrorsRef.current += 1;
+        console.warn(`SpeechRecognition network error (${networkErrorsRef.current}/5)`);
+      } else if (e.error !== "no-speech" && e.error !== "aborted") {
         console.warn("SpeechRecognition error:", e.error);
       }
     };
@@ -148,6 +159,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   // ── Stop recording ─────────────────────────────────────────────────────────
   async function stopRecording() {
     activeRef.current = false;
+    networkErrorsRef.current = 0;
     clearTimeout(restartTimerRef.current);
     clearInterval(graphIntervalRef.current);
 
