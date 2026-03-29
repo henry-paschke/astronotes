@@ -19,12 +19,7 @@ const COLLIDE_R = { topic: 70, subtopic: 55, detail: 80 };
 const SUB_ZOOM = 0.2; // zoom level subtopics appear
 const DETAIL_ZOOM = 0.5; // zoom level details appear
 const FADE_RANGE = 0.15;
-const POLL_MS = 800;
 // ─────────────────────────────────────────────
-
-function darken(hex, t) {
-  return `rgb(${[1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * t)).join(",")})`;
-}
 
 function wrapText(ctx, text, maxW) {
   const words = text.split(" ");
@@ -41,8 +36,15 @@ function wrapText(ctx, text, maxW) {
   return lines;
 }
 
+// Dark-theme detail node colors
+const DETAIL_THEME = {
+  definition: { bg: "#071d35", border: "#4a7fcb", label: "#7ab8f5" },
+  example:    { bg: "#1c1200", border: "#c4a35a", label: "#e8c878" },
+  fact:       { bg: "#091a0e", border: "#5aab7a", label: "#6ed49a" },
+};
+
 function drawNode(node, ctx, gs) {
-  const { type, x, y, label = node.id, color = "#999" } = node;
+  const { type, x, y, label = node.id, color = "#c4a35a" } = node;
   let alpha = 1;
   if (type === "subtopic") alpha = Math.min(1, (gs - SUB_ZOOM) / FADE_RANGE);
   if (type === "detail") alpha = Math.min(1, (gs - DETAIL_ZOOM) / FADE_RANGE);
@@ -58,7 +60,7 @@ function drawNode(node, ctx, gs) {
     const bw = ctx.measureText(label).width + pad * 2,
       bh = fs + pad * 1.6,
       r = bh / 2;
-    pill(ctx, x, y, bw, bh, r, color, "rgba(0,0,0,0.15)", 1.2 / gs);
+    pill(ctx, x, y, bw, bh, r, color, "rgba(255,255,255,0.12)", 1.2 / gs);
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -70,11 +72,13 @@ function drawNode(node, ctx, gs) {
     const bw = ctx.measureText(label).width + pad * 2,
       bh = fs + pad * 1.4,
       r = bh / 2;
-    pill(ctx, x, y, bw, bh, r, "#fff", color, 1.5 / gs);
-    ctx.globalAlpha = alpha * 0.15;
+    // Dark fill with vibrant border
+    pill(ctx, x, y, bw, bh, r, "#07142a", color, 1.5 / gs);
+    // Subtle color tint overlay
+    ctx.globalAlpha = alpha * 0.08;
     pill(ctx, x, y, bw, bh, r, color, "transparent", 0);
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = darken(color, 0.5);
+    ctx.fillStyle = color;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(label, x, y);
@@ -88,12 +92,11 @@ function drawNode(node, ctx, gs) {
       bw = maxW + pad * 2,
       bh = lines.length * lh + pad * 1.6,
       r = 4 / gs;
-    const bg = node.color || "#F5F5F5",
-      border = node.border_color || "#BDBDBD";
-    rect(ctx, x, y, bw, bh, r, bg, border, 1 / gs);
+    const dt = DETAIL_THEME[node.detail_type] || { bg: "#07152a", border: "#c4a35a", label: "#e8c878" };
+    rect(ctx, x, y, bw, bh, r, dt.bg, dt.border, 1 / gs);
     if (node.detail_type) {
       ctx.font = `600 ${8 / gs}px sans-serif`;
-      ctx.fillStyle = border;
+      ctx.fillStyle = dt.border;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillText(
@@ -102,7 +105,7 @@ function drawNode(node, ctx, gs) {
         y - bh / 2 + pad * 0.8,
       );
     }
-    ctx.fillStyle = "#333";
+    ctx.fillStyle = dt.label;
     ctx.font = `400 ${fs}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -193,18 +196,20 @@ function SearchBar({ getNodes, onSelect }) {
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 10,
-        width: 280,
+        width: 300,
+        fontFamily: "sans-serif",
       }}
     >
       <div
         style={{
           display: "flex",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
-          borderRadius: results.length ? "16px 16px 0 0" : 24,
-          background: "#fff",
-          border: "1px solid #e0e0e0",
+          borderRadius: results.length ? "4px 4px 0 0" : 4,
+          background: "rgba(7,21,41,0.92)",
+          border: "1px solid rgba(196,163,90,0.35)",
+          borderBottom: results.length ? "1px solid rgba(196,163,90,0.15)" : undefined,
           overflow: "hidden",
-          borderBottom: results.length ? "1px solid #f0f0f0" : undefined,
+          backdropFilter: "blur(6px)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
         }}
       >
         <input
@@ -220,37 +225,43 @@ function SearchBar({ getNodes, onSelect }) {
           style={{
             border: "none",
             outline: "none",
-            padding: "8px 16px",
+            padding: "9px 14px",
             fontSize: 13,
             flex: 1,
             background: "transparent",
-            color: "#333",
+            color: "#f0e8d5",
           }}
         />
         <button
           onClick={() => results[0] && select(results[0])}
           style={{
             border: "none",
-            background: "#4a90e2",
-            color: "#fff",
-            padding: "8px 16px",
+            borderLeft: "1px solid rgba(196,163,90,0.2)",
+            background: "rgba(196,163,90,0.12)",
+            color: "#c4a35a",
+            padding: "9px 16px",
             cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            transition: "background 0.15s",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(196,163,90,0.22)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(196,163,90,0.12)")}
         >
-          Go
+          GO
         </button>
       </div>
       {results.length > 0 && (
         <div
           style={{
-            background: "#fff",
-            border: "1px solid #e0e0e0",
+            background: "rgba(7,21,41,0.96)",
+            border: "1px solid rgba(196,163,90,0.35)",
             borderTop: "none",
-            borderRadius: "0 0 16px 16px",
+            borderRadius: "0 0 4px 4px",
             overflow: "hidden",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            backdropFilter: "blur(6px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
           }}
         >
           {results.map((n, i) => (
@@ -258,45 +269,56 @@ function SearchBar({ getNodes, onSelect }) {
               key={n.id}
               onClick={() => select(n)}
               style={{
-                padding: "7px 16px",
+                padding: "8px 14px",
                 fontSize: 12,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                borderTop: i > 0 ? "1px solid #f5f5f5" : "none",
-                background: "#fff",
+                borderTop: i > 0 ? "1px solid rgba(196,163,90,0.1)" : "none",
+                background: "transparent",
+                transition: "background 0.1s",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "#f5f8ff")
+                (e.currentTarget.style.background = "rgba(196,163,90,0.08)")
               }
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
             >
               <span
                 style={{
                   fontSize: 9,
                   padding: "1px 5px",
-                  borderRadius: 4,
-                  fontWeight: 600,
+                  borderRadius: 3,
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
                   background:
                     n.type === "topic"
-                      ? "#e8f0fe"
+                      ? "rgba(74,127,203,0.2)"
                       : n.type === "subtopic"
-                        ? "#f0faf0"
-                        : "#fef9e7",
+                        ? "rgba(196,163,90,0.15)"
+                        : "rgba(90,171,122,0.15)",
                   color:
                     n.type === "topic"
-                      ? "#4a90e2"
+                      ? "#4a7fcb"
                       : n.type === "subtopic"
-                        ? "#4caf50"
-                        : "#f5a623",
+                        ? "#c4a35a"
+                        : "#5aab7a",
+                  border: `1px solid ${
+                    n.type === "topic"
+                      ? "rgba(74,127,203,0.3)"
+                      : n.type === "subtopic"
+                        ? "rgba(196,163,90,0.3)"
+                        : "rgba(90,171,122,0.3)"
+                  }`,
                 }}
               >
                 {n.type}
               </span>
               <span
                 style={{
-                  color: "#333",
+                  color: "#b8a98a",
                   flex: 1,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -330,11 +352,6 @@ export default function MindMap({ graph }) {
   }, []);
 
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
-  const [status, setStatus] = useState({
-    live: false,
-    label: "Waiting…",
-    count: 0,
-  });
   const [dims, setDims] = useState({ width: 800, height: 600 });
 
   useEffect(() => {
@@ -460,14 +477,17 @@ export default function MindMap({ graph }) {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        background: "#f8f8f6",
+        background: "#010810",
+        backgroundImage:
+          "linear-gradient(rgba(196,163,90,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(196,163,90,0.04) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
       }}
     >
       <ForceGraph2D
         ref={fgRef}
         graphData={graphData}
-        backgroundColor="#f8f8f6"
-        linkColor={() => "rgba(0,0,0,0.10)"}
+        backgroundColor="rgba(0,0,0,0)"
+        linkColor={() => "rgba(196,163,90,0.18)"}
         linkWidth={1}
         linkVisibility={linkVisible}
         nodeCanvasObject={drawNode}
@@ -487,28 +507,29 @@ export default function MindMap({ graph }) {
       />
 
       <SearchBar getNodes={getNodes} onSelect={handleSelect} />
-      {/* Status badge */}
+
+      {/* Node count badge */}
       <div
         style={{
           position: "absolute",
           bottom: 16,
           right: 16,
-          fontSize: 12,
-          color: "#888",
-          background: "rgba(255,255,255,0.9)",
-          padding: "4px 12px",
+          fontFamily: "sans-serif",
+          fontSize: 11,
+          color: "#b8a98a",
+          background: "rgba(7,21,41,0.85)",
+          padding: "5px 14px",
           borderRadius: 20,
-          border: "1px solid #e0e0e0",
+          border: "1px solid rgba(196,163,90,0.25)",
           pointerEvents: "none",
           display: "flex",
           alignItems: "center",
-          gap: 4,
+          gap: 6,
+          backdropFilter: "blur(4px)",
         }}
       >
-        <span style={{ color: status.live ? "#4caf50" : "#bbb", fontSize: 10 }}>
-          {status.live ? "●" : "◎"}
-        </span>
-        {status.live ? `Live — ${status.count} nodes` : status.label}
+        <span style={{ color: "#c4a35a", fontSize: 9 }}>◆</span>
+        {graphData.nodes.length} nodes
       </div>
 
       {/* Legend */}
@@ -517,33 +538,39 @@ export default function MindMap({ graph }) {
           position: "absolute",
           bottom: 16,
           left: 16,
+          fontFamily: "sans-serif",
           fontSize: 11,
-          color: "#666",
-          background: "rgba(255,255,255,0.9)",
-          padding: "8px 12px",
-          borderRadius: 10,
-          border: "1px solid #e0e0e0",
-          lineHeight: 2,
+          color: "#b8a98a",
+          background: "rgba(7,21,41,0.85)",
+          padding: "10px 14px",
+          borderRadius: 6,
+          border: "1px solid rgba(196,163,90,0.25)",
+          lineHeight: 1,
           pointerEvents: "none",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          backdropFilter: "blur(4px)",
         }}
       >
         {[
-          ["Definition", "#E8F4FD", "#90CAF9"],
-          ["Example", "#FFF3E0", "#FFCC80"],
-          ["Fact", "#F1F8E9", "#A5D6A7"],
+          ["Definition", "#071d35", "#4a7fcb"],
+          ["Example",    "#1c1200", "#c4a35a"],
+          ["Fact",       "#091a0e", "#5aab7a"],
         ].map(([label, bg, border]) => (
           <div
             key={label}
-            style={{ display: "flex", alignItems: "center", gap: 5 }}
+            style={{ display: "flex", alignItems: "center", gap: 7 }}
           >
             <span
               style={{
                 display: "inline-block",
                 width: 10,
                 height: 10,
-                borderRadius: 3,
+                borderRadius: 2,
                 background: bg,
                 border: `1.5px solid ${border}`,
+                flexShrink: 0,
               }}
             />
             {label}

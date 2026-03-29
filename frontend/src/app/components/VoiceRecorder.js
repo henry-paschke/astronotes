@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { deinitializeRedis, initializeRedis } from "../api/dashboard";
 import { updateGraph } from "../api/mindmap";
+import styles from "./VoiceRecorder.module.css";
 
 // Minimum words buffered before sending to graph mid-recording
 const MIN_GRAPH_WORDS = 8;
@@ -157,19 +158,46 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
     await deinitializeRedis(id);
   }
 
-  const label = isRecording
-    ? graphStatus === "updating"
-      ? "Updating…"
-      : "Stop"
-    : "Record";
-
   return (
-    <button
-      className={isRecording ? "recording" : ""}
-      onClick={isRecording ? stopRecording : startRecording}
-      aria-label={label}
-    >
-      {label}
-    </button>
+    <div className={styles.wrap}>
+      <div className={styles.btnWrap}>
+        {isRecording && (
+          <>
+            <span className={styles.ring} />
+            <span className={`${styles.ring} ${styles.ring2}`} />
+          </>
+        )}
+        <button
+          className={`${styles.btn} ${isRecording ? styles.btnRecording : ""}`}
+          onClick={isRecording ? stopRecording : startRecording}
+          aria-label={isRecording ? "Stop recording" : "Start recording"}
+        >
+          {/* Microphone icon */}
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={styles.icon}>
+            <rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" />
+            <path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div className={styles.status}>
+        {graphStatus === "updating" ? (
+          <span className={styles.updating}>
+            <svg className={styles.spinner} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.5"
+                strokeDasharray="20" strokeDashoffset="8" strokeLinecap="round" />
+            </svg>
+            Mapping
+          </span>
+        ) : isRecording ? (
+          <span className={styles.listening}>
+            <span className={styles.listenDot} />
+            Listening
+          </span>
+        ) : null}
+      </div>
+    </div>
   );
 }

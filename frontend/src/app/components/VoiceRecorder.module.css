@@ -1,0 +1,144 @@
+/* ── Outer wrap ──────────────────────────────────────────────────────────── */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+/* ── Button + rings container ────────────────────────────────────────────── */
+.btnWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+}
+
+/* ── Pulse rings (recording only) ────────────────────────────────────────── */
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold);
+  opacity: 0;
+  animation: pulseRing 2s ease-out infinite;
+  pointer-events: none;
+}
+
+.ring2 {
+  animation-delay: 0.8s;
+}
+
+@keyframes pulseRing {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* ── Main button ─────────────────────────────────────────────────────────── */
+.btn {
+  position: relative;
+  z-index: 1;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-bright);
+  background: var(--bg-card);
+  color: var(--parchment-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  background: var(--bg-mid);
+  border-color: var(--gold);
+  color: var(--parchment);
+  box-shadow: 0 0 16px rgba(196, 163, 90, 0.2);
+}
+
+.btnRecording {
+  background: var(--gold);
+  border-color: var(--gold-light);
+  color: var(--bg-deep);
+  box-shadow: 0 0 24px rgba(196, 163, 90, 0.4);
+}
+
+.btnRecording:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: var(--bg-deep);
+  box-shadow: 0 0 32px rgba(196, 163, 90, 0.55);
+}
+
+/* ── Mic icon ─────────────────────────────────────────────────────────────── */
+.icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Status row ──────────────────────────────────────────────────────────── */
+.status {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Listening indicator */
+.listening {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+
+.listenDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: listenPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes listenPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.6); }
+}
+
+/* Mapping / updating indicator */
+.updating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nebula);
+  opacity: 0.85;
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

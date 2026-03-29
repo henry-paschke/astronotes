@@ -13,6 +13,7 @@ import Flashcards from "./tools/Flashcards";
 import PowerPoint from "./tools/PowerPoint";
 import Exam from "./tools/Exam";
 import Chatbot from "./tools/Chatbot";
+import Settings from "./tools/Settings";
 import MindMapWrapper from "./tools/MindmapWrapper";
 
 // Stable wrapper so React never unmounts MindMap due to a changing function reference
@@ -409,6 +410,7 @@ export default function DashboardPage() {
     powerpoint: PowerPoint,
     exam: Exam,
     chatbot: Chatbot,
+    settings: Settings,
   };
 
   useEffect(() => {
