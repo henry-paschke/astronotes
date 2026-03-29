@@ -104,7 +104,10 @@ export default function NavBar({ showFeatureLinks = false }) {
         {showFeatureLinks && (
           <>
             <li>
-              <a href="#features" className={styles.navLink}>
+              <a
+                href="#features"
+                className={`${styles.navLink} ${styles.features}`}
+              >
                 Features
               </a>
             </li>
