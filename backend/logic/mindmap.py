@@ -25,43 +25,37 @@ TOPIC_COLORS = [
     "#A8B8FF",
 ]
 
-SYSTEM_PROMPT = """You are a knowledge extraction engine for a live lecture transcription tool.
+SYSTEM_PROMPT = """You are a knowledge extraction engine for a live lecture transcription tool. The input is raw, imperfect speech-to-text from a live lecture — expect fragments, run-ons, and messy phrasing.
 
-Your task is to extract academic and conceptual content from the input text and build a mind-map hierarchy.
-
-Strip filler words (um, uh, like, you know), false starts, and pure classroom admin (e.g. "any questions?", "see you next week"). Everything else — even if phrased loosely or incompletely — likely contains extractable information.
+Your job is to extract ANYTHING that could be a fact, concept, date, name, or idea — even from broken or incomplete sentences. Be aggressive about extracting nodes. When in doubt, extract.
 
 Extract a three-level hierarchy:
 
-1. TOPIC — a broad subject (e.g. "Machine Learning", "Photosynthesis")
-2. SUBTOPIC — a specific concept under each topic
-3. DETAIL — a concise, informative sentence about the subtopic
+1. TOPIC — a broad subject (e.g. "George Washington", "Photosynthesis")
+2. SUBTOPIC — a specific aspect or concept (e.g. "Early Life", "Birth")
+3. DETAIL — a short informative sentence reconstructed from the input
 
 Rules:
-- A topic may have multiple subtopics; a subtopic may have multiple details
-- Each detail must be ONE of:
-    - "definition": explains what something is
-    - "example": a concrete instance or application
-    - "fact": a notable property or relationship
-- Details should be complete sentences, but you MAY rephrase or reconstruct a fragment into a clean sentence if the meaning is clear
-- If the input only names a concept without elaboration, create a topic/subtopic node with a brief factual detail inferred from the concept name and prior context
-- Do NOT invent facts not supported by the input or prior context
-- If multiple topics exist, extract all of them
-
-Using prior knowledge:
-- Prior knowledge contains all nodes extracted so far in this session
-- Always check prior knowledge first — if the input relates to an existing topic or subtopic, reuse those EXACT names so the graph stays connected
-- If the input is short or ambiguous, lean on prior knowledge to place it correctly
-- Strongly prefer extracting SOMETHING over returning []
-- Only return [] when the entire input is pure noise (filler, greetings, off-topic chatter) with zero conceptual content even after consulting prior knowledge
+- Rephrase fragments into clean sentences freely — if you can guess the meaning, write it properly
+- A single name, date, or place is enough to create a node
+- Each detail must be ONE of: "definition", "example", or "fact"
+- Reuse EXACT topic/subtopic names from prior knowledge to keep the graph connected
+- If input relates to something in prior knowledge, always attach it there
+- ONLY return [] if the input is 100% noise — filler words, silence, or completely unintelligible with zero extractable concepts
 
 Example output (ONLY JSON array):
 [
   {
-    "topic": "Machine Learning",
-    "subtopic": "Supervised Learning",
-    "detail": "Supervised learning uses labeled datasets to train models to make predictions.",
-    "detail_type": "definition"
+    "topic": "George Washington",
+    "subtopic": "Early Life",
+    "detail": "George Washington was born on February 22nd, 1732 in Virginia.",
+    "detail_type": "fact"
+  },
+  {
+    "topic": "George Washington",
+    "subtopic": "Military Career",
+    "detail": "Washington became a celebrated soldier before becoming the first President of the United States.",
+    "detail_type": "fact"
   }
 ]
 
@@ -193,7 +187,7 @@ class GraphState:
 
 
 class GraphStateFAISSSpaCy(GraphState):
-    def __init__(self, topic_thresh=0.85, subtopic_thresh=0.75):
+    def __init__(self, topic_thresh=0.85, subtopic_thresh=0.85):
         super().__init__()
         self.topic_thresh = topic_thresh
         self.subtopic_thresh = subtopic_thresh

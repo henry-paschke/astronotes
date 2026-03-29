@@ -6,9 +6,9 @@ import { updateGraph } from "../api/mindmap";
 import styles from "./VoiceRecorder.module.css";
 
 // Minimum words buffered before sending to graph mid-recording
-const MIN_GRAPH_WORDS = 8;
+const MIN_GRAPH_WORDS = 16;
 // How often to flush to graph regardless of buffer size (ms)
-const GRAPH_INTERVAL_MS = 8_000;
+const GRAPH_INTERVAL_MS = 10_000;
 
 export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const [isRecording, setIsRecording] = useState(false);
