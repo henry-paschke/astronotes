@@ -1,5 +1,6 @@
 import styles from "./page.module.css";
 import NavBar from "./components/NavBar";
+import Link from "next/link";
 
 // ─── Deterministic pseudo-random (runs server-side) ───────────────────────────
 function pr(seed) {
@@ -556,6 +557,170 @@ function CompassIcon() {
   );
 }
 
+function FlashcardIcon() {
+  return (
+    <svg viewBox="0 0 64 64" className={styles.featureIcon} aria-hidden="true">
+      {/* back card */}
+      <rect
+        x="16"
+        y="18"
+        width="28"
+        height="20"
+        rx="3"
+        fill="#4a7fcb"
+        opacity="0.25"
+      />
+      {/* front card */}
+      <rect
+        x="20"
+        y="14"
+        width="28"
+        height="20"
+        rx="3"
+        fill="#c4a35a"
+        opacity="0.9"
+      />
+      {/* lines (text) */}
+      <line
+        x1="24"
+        y1="20"
+        x2="44"
+        y2="20"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+      <line
+        x1="24"
+        y1="26"
+        x2="40"
+        y2="26"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+      <line
+        x1="24"
+        y1="32"
+        x2="36"
+        y2="32"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+    </svg>
+  );
+}
+
+function SlideshowIcon() {
+  return (
+    <svg viewBox="0 0 64 64" className={styles.featureIcon} aria-hidden="true">
+      {/* screen */}
+      <rect
+        x="14"
+        y="14"
+        width="36"
+        height="24"
+        rx="3"
+        fill="#c4a35a"
+        opacity="0.9"
+      />
+      {/* stand */}
+      <line
+        x1="32"
+        y1="38"
+        x2="32"
+        y2="48"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+      <line
+        x1="24"
+        y1="48"
+        x2="40"
+        y2="48"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+      {/* slide content */}
+      <circle cx="24" cy="24" r="2.5" fill="#4a7fcb" opacity="0.6" />
+      <line
+        x1="30"
+        y1="22"
+        x2="44"
+        y2="22"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+      <line
+        x1="30"
+        y1="28"
+        x2="40"
+        y2="28"
+        stroke="#4a7fcb"
+        strokeWidth="1"
+        opacity="0.6"
+      />
+    </svg>
+  );
+}
+
+function SummaryIcon() {
+  const nodes = [
+    [16, 20],
+    [48, 20],
+    [32, 44],
+  ];
+  const edges = [
+    [0, 2],
+    [1, 2],
+  ];
+
+  return (
+    <svg viewBox="0 0 64 64" className={styles.featureIcon} aria-hidden="true">
+      {/* lines converging */}
+      {edges.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={nodes[a][0]}
+          y1={nodes[a][1]}
+          x2={nodes[b][0]}
+          y2={nodes[b][1]}
+          stroke="#4a7fcb"
+          strokeWidth="0.8"
+          opacity="0.4"
+        />
+      ))}
+
+      {/* nodes */}
+      {nodes.map(([x, y], i) => (
+        <circle
+          key={i}
+          cx={x}
+          cy={y}
+          r={i === 2 ? 4 : 2.5}
+          fill={i === 2 ? "#e8c878" : "#c4a35a"}
+          opacity={i === 2 ? 1 : 0.8}
+        />
+      ))}
+
+      {/* subtle ring for "condensed idea" */}
+      <circle
+        cx="32"
+        cy="44"
+        r="8"
+        fill="none"
+        stroke="#e8c878"
+        strokeWidth="1"
+        opacity="0.5"
+      />
+    </svg>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (
@@ -739,10 +904,10 @@ export default function Home() {
               opacity="0.5"
             />
           </svg>
-          <h2 className={styles.sectionTitle}>The Instruments</h2>
+          <h2 className={styles.sectionTitle}>Features</h2>
           <p className={styles.sectionSub}>
-            Three celestial tools &mdash; one unified observatory for your
-            studies
+            Everything you need to turn a lecture into something you actually
+            remember
           </p>
         </div>
 
@@ -750,13 +915,12 @@ export default function Home() {
           <article className={styles.featureCard}>
             <div className={styles.featureCardGlow} />
             <div className={styles.featureIconWrap}>
-              <MicIcon />
+              <ConstellationIcon />
             </div>
-            <h3 className={styles.featureTitle}>Stellar Recorder</h3>
+            <h3 className={styles.featureTitle}>Mind Map</h3>
             <p className={styles.featureDesc}>
-              Capture lectures with precision. Timestamps anchor your notes to
-              the exact moment of discovery, so no insight drifts past the
-              horizon.
+              Concepts extracted from your lecture and laid out as a live graph
+              — topics, subtopics, and connections built as you speak.
             </p>
             <a href="#" className={styles.featureLink}>
               Explore &rarr;
@@ -768,12 +932,27 @@ export default function Home() {
           >
             <div className={styles.featureCardGlow} />
             <div className={styles.featureIconWrap}>
-              <ConstellationIcon />
+              <SummaryIcon></SummaryIcon>
             </div>
-            <h3 className={styles.featureTitle}>Constellation Maps</h3>
+            <h3 className={styles.featureTitle}>Summary</h3>
             <p className={styles.featureDesc}>
-              Weave ideas into mind maps that mirror the night sky. Draw
-              connections the way navigators once charted stars between worlds.
+              A clean, structured summary of your lecture. The key points
+              without the filler, ready to review in minutes.
+            </p>
+            <a href="#" className={styles.featureLink}>
+              Explore &rarr;
+            </a>
+          </article>
+
+          <article className={styles.featureCard}>
+            <div className={styles.featureCardGlow} />
+            <div className={styles.featureIconWrap}>
+              <FlashcardIcon></FlashcardIcon>
+            </div>
+            <h3 className={styles.featureTitle}>Flashcards</h3>
+            <p className={styles.featureDesc}>
+              Auto-generated flashcards from your notes. Study the right things
+              without spending an hour making cards.
             </p>
             <a href="#" className={styles.featureLink}>
               Explore &rarr;
@@ -785,10 +964,40 @@ export default function Home() {
             <div className={styles.featureIconWrap}>
               <CompassIcon />
             </div>
-            <h3 className={styles.featureTitle}>Study Compass</h3>
+            <h3 className={styles.featureTitle}>Exam Practice</h3>
             <p className={styles.featureDesc}>
-              Forge flashcards, quizzes, and revision schedules from your notes.
-              Let the compass always point you toward mastery.
+              Practice questions generated from your lecture content. Know what
+              you know before the exam does.
+            </p>
+            <a href="#" className={styles.featureLink}>
+              Explore &rarr;
+            </a>
+          </article>
+
+          <article className={styles.featureCard}>
+            <div className={styles.featureCardGlow} />
+            <div className={styles.featureIconWrap}>
+              <SlideshowIcon></SlideshowIcon>
+            </div>
+            <h3 className={styles.featureTitle}>Slideshow</h3>
+            <p className={styles.featureDesc}>
+              Turn your lecture into a presentation. Useful for group study,
+              revision, or just seeing the material in a different format.
+            </p>
+            <a href="#" className={styles.featureLink}>
+              Explore &rarr;
+            </a>
+          </article>
+
+          <article className={styles.featureCard}>
+            <div className={styles.featureCardGlow} />
+            <div className={styles.featureIconWrap}>
+              <MicIcon></MicIcon>
+            </div>
+            <h3 className={styles.featureTitle}>Chatbot</h3>
+            <p className={styles.featureDesc}>
+              Ask questions about your lecture and get answers grounded in what
+              was actually said. No hallucinations, no guessing.
             </p>
             <a href="#" className={styles.featureLink}>
               Explore &rarr;
@@ -804,9 +1013,9 @@ export default function Home() {
           <p className={styles.ctaText}>
             Every great explorer needed a chart. Yours starts here.
           </p>
-          <a href="#" className={styles.ctaPrimary}>
-            Open the Observatory
-          </a>
+          <Link href="/signup" className={styles.ctaPrimary}>
+            Get Started
+          </Link>
         </div>
       </section>
 
