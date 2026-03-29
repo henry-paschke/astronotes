@@ -1,0 +1,1134 @@
+{
+  "nodes": [
+    {
+      "id": "topic::animals",
+      "label": "Animals",
+      "type": "topic",
+      "color": "#FF9F5A",
+      "size": 1500
+    },
+    {
+      "id": "sub::topic::animals::cellular organization",
+      "label": "Cellular Organization",
+      "type": "subtopic",
+      "color": "#FF9F5A",
+      "size": 700
+    },
+    {
+      "id": "detail::6338e14e-db81-4c54-8d92-2a668f5053af",
+      "label": "Animals are multicellular, eukaryotic organisms.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animals::nutrition",
+      "label": "Nutrition",
+      "type": "subtopic",
+      "color": "#FF9F5A",
+      "size": 700
+    },
+    {
+      "id": "detail::76174afc-8637-4cf9-9760-cf79cfab0ac2",
+      "label": "Animals are heterotrophic, meaning they rely on consuming other organisms for energy.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "topic::animal classification",
+      "label": "Animal Classification",
+      "type": "topic",
+      "color": "#5DB8FF",
+      "size": 1600
+    },
+    {
+      "id": "sub::topic::animal classification::body symmetry",
+      "label": "Body Symmetry",
+      "type": "subtopic",
+      "color": "#5DB8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::da86b142-b9d1-4f5c-9fad-ff6566f517e0",
+      "label": "Animals are classified based on their body symmetry as one of the first classification methods.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal classification::radial symmetry",
+      "label": "Radial Symmetry",
+      "type": "subtopic",
+      "color": "#5DB8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::4c146d40-bc0c-49b2-9c0f-061a6d07b757",
+      "label": "Radial symmetry is found in animals such as jellyfish and sea anemones.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "topic::body symmetry",
+      "label": "Body Symmetry",
+      "type": "topic",
+      "color": "#6ED49A",
+      "size": 1600
+    },
+    {
+      "id": "sub::topic::body symmetry::radial symmetry",
+      "label": "Radial Symmetry",
+      "type": "subtopic",
+      "color": "#6ED49A",
+      "size": 700
+    },
+    {
+      "id": "detail::fd406e1a-5825-42c9-b32f-0f85b77b1a31",
+      "label": "Any plane that passes through the central axis of a radially symmetric body divides it into similar halves.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::body symmetry::bilateral symmetry",
+      "label": "Bilateral Symmetry",
+      "type": "subtopic",
+      "color": "#6ED49A",
+      "size": 700
+    },
+    {
+      "id": "detail::d09339c5-5236-4ef0-9eb3-582d3d1d4f38",
+      "label": "Bilateral symmetry is seen in most animals, including humans, dogs, and insects.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "detail::b9fe4ed4-5bdb-4836-b4fc-ef3e4a19b57f",
+      "label": "Bilateral symmetry generally allows for a head region and directional movement, which is an important evolutionary adaptation.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::animal biology",
+      "label": "Animal Physiology",
+      "type": "topic",
+      "color": "#C47EDB",
+      "size": 2000
+    },
+    {
+      "id": "sub::topic::animal biology::movement",
+      "label": "Movement",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::a471a743-7a13-4d77-a93a-6ac76bfcace2",
+      "label": "Movement is a key aspect of animal biology.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::animal movement and locomotion",
+      "label": "Animal Movement and Locomotion",
+      "type": "topic",
+      "color": "#F7C948",
+      "size": 1500
+    },
+    {
+      "id": "sub::topic::animal movement and locomotion::sessile animals",
+      "label": "Sessile Animals",
+      "type": "subtopic",
+      "color": "#F7C948",
+      "size": 700
+    },
+    {
+      "id": "detail::c3da774c-b06d-42b5-b215-05c030569943",
+      "label": "Sessile animals like sponges attach to surfaces and remain in one place rather than moving actively.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "detail::7e0e7aac-d634-49dc-9032-57bad801858f",
+      "label": "Sponges filter water to obtain nutrients and lack nerves or muscles found in more complex animals.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::animal symmetry",
+      "label": "Animal Symmetry",
+      "type": "topic",
+      "color": "#4ECDC4",
+      "size": 1500
+    },
+    {
+      "id": "sub::topic::animal symmetry::radial symmetry",
+      "label": "Radial Symmetry",
+      "type": "subtopic",
+      "color": "#4ECDC4",
+      "size": 700
+    },
+    {
+      "id": "detail::89d973ba-4394-41cd-8a56-a98a14964674",
+      "label": "Adult starfish exhibit radial symmetry, a body plan organized around a central axis.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal symmetry::bilateral symmetry",
+      "label": "Bilateral Symmetry",
+      "type": "subtopic",
+      "color": "#4ECDC4",
+      "size": 700
+    },
+    {
+      "id": "detail::369d5d5a-c787-4732-b94c-e02c7c634ec7",
+      "label": "Starfish larvae possess bilateral symmetry, which suggests an evolutionary connection to bilateral ancestors.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal biology::water vascular system",
+      "label": "Water Vascular System",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::42185cb1-ce1a-4957-85f7-a0bb81be32a6",
+      "label": "Starfish possess a water vascular system, which is a hydraulic network used for movement and feeding.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal biology::complete digestive tract",
+      "label": "Complete Digestive Tract",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::82e6bc7e-7717-44e7-8914-fa510d684de1",
+      "label": "A complete digestive tract has both a mouth and an anus, allowing food to move in a single direction through the system.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "detail::5a364c19-4e28-4ac3-bcd6-bc675b2c2411",
+      "label": "Humans, worms, and many insects are examples of animals with complete digestive tracts.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "topic::digestive systems",
+      "label": "Circulatory Systems",
+      "type": "topic",
+      "color": "#FF7B7B",
+      "size": 1700
+    },
+    {
+      "id": "sub::topic::digestive systems::incomplete digestive system",
+      "label": "Incomplete Digestive System",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::098c385f-0098-454d-955c-5e16ec0c1047",
+      "label": "Cnidarians have an incomplete digestive system with only a single opening that serves as both mouth and anus.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "detail::87c976db-12bd-4164-86aa-cdd2a6dbea43",
+      "label": "In animals with incomplete digestive systems, food enters, gets partially digested, and waste is expelled through the same opening.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::animal reproduction",
+      "label": "Animal Reproduction",
+      "type": "topic",
+      "color": "#A8B8FF",
+      "size": 1700
+    },
+    {
+      "id": "sub::topic::animal reproduction::asexual reproduction",
+      "label": "Asexual Reproduction",
+      "type": "subtopic",
+      "color": "#A8B8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::5c101320-dc5f-4c98-ad03-b589630fbcdd",
+      "label": "Hydra can reproduce asexually through budding, producing clones of themselves.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal reproduction::sexual reproduction",
+      "label": "Sexual Reproduction",
+      "type": "subtopic",
+      "color": "#A8B8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::b9097b5e-20ab-4697-91a0-048b1ca6ec9e",
+      "label": "Most complex animals reproduce sexually.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal reproduction::external fertilization",
+      "label": "External Fertilization",
+      "type": "subtopic",
+      "color": "#A8B8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::8e2bfc17-5047-43a5-92f3-e35a301d8c3c",
+      "label": "Many fish and amphibians perform external fertilization by releasing eggs and sperm into water.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "detail::a5b02ce3-3da9-45d9-9edb-325a482b6a3b",
+      "label": "Mammals, birds, and reptiles typically use internal fertilization, which offers more protection to the developing embryo.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal classification::tissue complexity and body organization",
+      "label": "Tissue Complexity and Body Organization",
+      "type": "subtopic",
+      "color": "#5DB8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::8acb6bea-9c1c-4591-808f-64256ae12914",
+      "label": "Animals are classified by their tissue complexity and body organization.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "topic::animal germ layers",
+      "label": "Animal Germ Layers",
+      "type": "topic",
+      "color": "#FF9F5A",
+      "size": 1600
+    },
+    {
+      "id": "sub::topic::animal germ layers::germ layer distribution",
+      "label": "Germ Layer Distribution",
+      "type": "subtopic",
+      "color": "#FF9F5A",
+      "size": 700
+    },
+    {
+      "id": "detail::a3c7d58a-0265-4451-86a5-d93a8a1b7eeb",
+      "label": "Sponges lack true tissues, cnidarians have two germ layers, and most other animals have three germ layers.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "detail::dc18767c-9b39-44b6-987b-911394a757b4",
+      "label": "The three primary germ layers in most animals are the ectoderm, mesoderm, and endoderm.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal germ layers::mesoderm function",
+      "label": "Mesoderm Function",
+      "type": "subtopic",
+      "color": "#FF9F5A",
+      "size": 700
+    },
+    {
+      "id": "detail::de09e3b9-e16e-47dc-9ffa-f1a384a19e02",
+      "label": "The mesoderm gives rise to muscles, bones, and the circulatory system.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::animal body systems",
+      "label": "Animal Body Systems",
+      "type": "topic",
+      "color": "#5DB8FF",
+      "size": 1400
+    },
+    {
+      "id": "sub::topic::animal body systems::nervous systems",
+      "label": "Nervous Systems",
+      "type": "subtopic",
+      "color": "#5DB8FF",
+      "size": 700
+    },
+    {
+      "id": "detail::fdfe9099-eb6d-486a-90a3-633c7a7ab171",
+      "label": "Nervous systems vary dramatically across different animal groups.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::nervous system evolution",
+      "label": "Nervous System Evolution",
+      "type": "topic",
+      "color": "#6ED49A",
+      "size": 1500
+    },
+    {
+      "id": "sub::topic::nervous system evolution::nerve nets in simple animals",
+      "label": "Nerve Nets in Simple Animals",
+      "type": "subtopic",
+      "color": "#6ED49A",
+      "size": 700
+    },
+    {
+      "id": "detail::988a95f3-15b2-4bdb-ae48-304bf41af009",
+      "label": "Cnidarians have nerve nets that allow them to respond to stimuli but lack a central brain.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "detail::9f958ec4-8b7b-4590-86b9-e2760172d696",
+      "label": "Complex animals have centralized nervous systems, including brains and spinal cords, which enable advanced behaviors like learning, memory, and coordinated movement.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal biology::key physiological systems",
+      "label": "Key Physiological Systems",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::a393f108-5e07-4739-886f-ef8bb154f112",
+      "label": "Circulation and respiration are fundamental features of animal physiology.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::gas exchange in animals",
+      "label": "Gas Exchange in Animals",
+      "type": "topic",
+      "color": "#C47EDB",
+      "size": 1600
+    },
+    {
+      "id": "sub::topic::gas exchange in animals::diffusion-based gas exchange",
+      "label": "Diffusion-Based Gas Exchange",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::884880a2-b89c-4599-a01f-5cce6c55929b",
+      "label": "Some animals rely on diffusion for gas exchange, which is effective for smaller organisms.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::gas exchange in animals::specialized circulatory systems",
+      "label": "Specialized Circulatory Systems",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::5dc8f938-9ed6-418e-9f8c-c11a63476056",
+      "label": "Larger or more active animals develop specialized circulatory systems to meet their gas exchange demands.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "detail::acffdb2e-dbf6-4dcd-9582-23f6c52788e3",
+      "label": "Open circulatory systems, like those found in insects, allow hemolymph to bathe organs directly.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "detail::cefb758d-9fcc-479e-81b9-663fb0ad1d0f",
+      "label": "Closed circulatory systems contain blood within vessels, allowing for higher metabolic rates and more efficient transport of nutrients and oxygen.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "detail::c2a0a7c8-7f11-4145-8131-bc9e61299e37",
+      "label": "Mammals possess closed circulatory systems.",
+      "type": "detail",
+      "detail_type": "example",
+      "color": "#FFF3E0",
+      "border_color": "#FFCC80",
+      "size": 300
+    },
+    {
+      "id": "topic::ecological roles",
+      "label": "Ecological Roles",
+      "type": "topic",
+      "color": "#F7C948",
+      "size": 1500
+    },
+    {
+      "id": "sub::topic::ecological roles::animal feeding types",
+      "label": "Animal Feeding Types",
+      "type": "subtopic",
+      "color": "#F7C948",
+      "size": 700
+    },
+    {
+      "id": "detail::e217428d-f73c-4ad0-ba82-a759dd6f4518",
+      "label": "Animals can be classified as herbivores, carnivores, omnivores, detritivores, or parasites based on their feeding strategies.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::ecological roles::ecosystem interactions",
+      "label": "Ecosystem Interactions",
+      "type": "subtopic",
+      "color": "#F7C948",
+      "size": 700
+    },
+    {
+      "id": "detail::27fd8e2a-6585-478b-8291-28b3e61fcc6e",
+      "label": "Animals interact with ecosystems in complex ways through their various ecological roles.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "topic::population and community ecology",
+      "label": "Population and Community Ecology",
+      "type": "topic",
+      "color": "#4ECDC4",
+      "size": 1600
+    },
+    {
+      "id": "sub::topic::population and community ecology::predation",
+      "label": "Predation",
+      "type": "subtopic",
+      "color": "#4ECDC4",
+      "size": 700
+    },
+    {
+      "id": "detail::dd17991a-b61d-40d7-8ace-e0781ac79774",
+      "label": "Predation is one of the key factors that shape populations and communities.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::population and community ecology::competition",
+      "label": "Competition",
+      "type": "subtopic",
+      "color": "#4ECDC4",
+      "size": 700
+    },
+    {
+      "id": "detail::a64d6d01-eb19-4049-a714-163e1b1b47e4",
+      "label": "Competition is a major ecological interaction that influences the structure and composition of populations and communities.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::population and community ecology::symbiosis",
+      "label": "Symbiosis",
+      "type": "subtopic",
+      "color": "#4ECDC4",
+      "size": 700
+    },
+    {
+      "id": "detail::612883f9-98d5-48c8-ab9f-0e7b51cf29bc",
+      "label": "Symbiosis shapes populations and communities through various forms of species interactions.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "topic::evolutionary biology",
+      "label": "Evolutionary Biology",
+      "type": "topic",
+      "color": "#FF7B7B",
+      "size": 1900
+    },
+    {
+      "id": "sub::topic::evolutionary biology::adaptive diversity",
+      "label": "Adaptive Diversity",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::f2063850-67c9-47c1-8406-654222957c4b",
+      "label": "Understanding ecological roles such as predation, competition, and symbiosis helps explain why animals have diverse forms and behaviors across different environments.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::evolutionary biology::phylogenetics",
+      "label": "Phylogenetics",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::2f39c453-c358-48d3-a55f-1bbf0fe2cfbb",
+      "label": "Phylogenetics is used to study evolutionary relationships among animals by comparing morphological traits and genetic data.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::evolutionary biology::methods of studying evolution",
+      "label": "Methods of Studying Evolution",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::fc553593-3978-4ec8-95f1-19b87f34f678",
+      "label": "Morphological traits and genetic data are increasingly used together to determine evolutionary relationships among animal species.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "detail::7b9c4096-ea0f-43ef-a60d-dfb0d5fd7d46",
+      "label": "Molecular studies have confirmed traditional taxonomic groupings while also uncovering unexpected evolutionary relationships.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::evolutionary biology::primate evolution",
+      "label": "Primate Evolution",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::c0976114-e971-43c5-8862-fc39760ed21c",
+      "label": "Molecular evidence demonstrates a close evolutionary link between humans and other primates.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::evolutionary biology::arthropod evolution",
+      "label": "Arthropod Evolution",
+      "type": "subtopic",
+      "color": "#FF7B7B",
+      "size": 700
+    },
+    {
+      "id": "detail::8baa5b02-64f1-4a05-a5ea-c534634db947",
+      "label": "Molecular studies reveal a close evolutionary relationship between insects and crustaceans.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal biology::defining characteristics of animals",
+      "label": "Defining Characteristics of Animals",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::28399406-eac3-478a-ba7d-462568cabb49",
+      "label": "Symmetry, movement, digestion, reproduction, nervous systems, and circulation are fundamental characteristics that define what makes an organism an animal.",
+      "type": "detail",
+      "detail_type": "definition",
+      "color": "#E8F4FD",
+      "border_color": "#90CAF9",
+      "size": 300
+    },
+    {
+      "id": "sub::topic::animal biology::diversity in animals",
+      "label": "Diversity in Animals",
+      "type": "subtopic",
+      "color": "#C47EDB",
+      "size": 700
+    },
+    {
+      "id": "detail::0117e462-e667-47d3-9ed1-24742f8de4a2",
+      "label": "The variation in form and function across the animal kingdom results from different combinations and expressions of core biological systems.",
+      "type": "detail",
+      "detail_type": "fact",
+      "color": "#F1F8E9",
+      "border_color": "#A5D6A7",
+      "size": 300
+    }
+  ],
+  "links": [
+    {
+      "source": "topic::animals",
+      "target": "sub::topic::animals::cellular organization"
+    },
+    {
+      "source": "sub::topic::animals::cellular organization",
+      "target": "detail::6338e14e-db81-4c54-8d92-2a668f5053af"
+    },
+    {
+      "source": "topic::animals",
+      "target": "sub::topic::animals::nutrition"
+    },
+    {
+      "source": "sub::topic::animals::nutrition",
+      "target": "detail::76174afc-8637-4cf9-9760-cf79cfab0ac2"
+    },
+    {
+      "source": "topic::animal classification",
+      "target": "sub::topic::animal classification::body symmetry"
+    },
+    {
+      "source": "sub::topic::animal classification::body symmetry",
+      "target": "detail::da86b142-b9d1-4f5c-9fad-ff6566f517e0"
+    },
+    {
+      "source": "topic::animal classification",
+      "target": "sub::topic::animal classification::radial symmetry"
+    },
+    {
+      "source": "sub::topic::animal classification::radial symmetry",
+      "target": "detail::4c146d40-bc0c-49b2-9c0f-061a6d07b757"
+    },
+    {
+      "source": "topic::body symmetry",
+      "target": "sub::topic::animal classification::body symmetry"
+    },
+    {
+      "source": "topic::body symmetry",
+      "target": "sub::topic::body symmetry::radial symmetry"
+    },
+    {
+      "source": "sub::topic::body symmetry::radial symmetry",
+      "target": "detail::fd406e1a-5825-42c9-b32f-0f85b77b1a31"
+    },
+    {
+      "source": "topic::body symmetry",
+      "target": "sub::topic::body symmetry::bilateral symmetry"
+    },
+    {
+      "source": "sub::topic::body symmetry::bilateral symmetry",
+      "target": "detail::d09339c5-5236-4ef0-9eb3-582d3d1d4f38"
+    },
+    {
+      "source": "sub::topic::body symmetry::bilateral symmetry",
+      "target": "detail::b9fe4ed4-5bdb-4836-b4fc-ef3e4a19b57f"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::movement"
+    },
+    {
+      "source": "sub::topic::animal biology::movement",
+      "target": "detail::a471a743-7a13-4d77-a93a-6ac76bfcace2"
+    },
+    {
+      "source": "topic::animal movement and locomotion",
+      "target": "sub::topic::animal movement and locomotion::sessile animals"
+    },
+    {
+      "source": "sub::topic::animal movement and locomotion::sessile animals",
+      "target": "detail::c3da774c-b06d-42b5-b215-05c030569943"
+    },
+    {
+      "source": "sub::topic::animal movement and locomotion::sessile animals",
+      "target": "detail::7e0e7aac-d634-49dc-9032-57bad801858f"
+    },
+    {
+      "source": "topic::animal symmetry",
+      "target": "sub::topic::animal symmetry::radial symmetry"
+    },
+    {
+      "source": "sub::topic::animal symmetry::radial symmetry",
+      "target": "detail::89d973ba-4394-41cd-8a56-a98a14964674"
+    },
+    {
+      "source": "topic::animal symmetry",
+      "target": "sub::topic::animal symmetry::bilateral symmetry"
+    },
+    {
+      "source": "sub::topic::animal symmetry::bilateral symmetry",
+      "target": "detail::369d5d5a-c787-4732-b94c-e02c7c634ec7"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::water vascular system"
+    },
+    {
+      "source": "sub::topic::animal biology::water vascular system",
+      "target": "detail::42185cb1-ce1a-4957-85f7-a0bb81be32a6"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::complete digestive tract"
+    },
+    {
+      "source": "sub::topic::animal biology::complete digestive tract",
+      "target": "detail::82e6bc7e-7717-44e7-8914-fa510d684de1"
+    },
+    {
+      "source": "sub::topic::animal biology::complete digestive tract",
+      "target": "detail::5a364c19-4e28-4ac3-bcd6-bc675b2c2411"
+    },
+    {
+      "source": "topic::digestive systems",
+      "target": "sub::topic::animal biology::water vascular system"
+    },
+    {
+      "source": "topic::digestive systems",
+      "target": "sub::topic::digestive systems::incomplete digestive system"
+    },
+    {
+      "source": "sub::topic::digestive systems::incomplete digestive system",
+      "target": "detail::098c385f-0098-454d-955c-5e16ec0c1047"
+    },
+    {
+      "source": "sub::topic::digestive systems::incomplete digestive system",
+      "target": "detail::87c976db-12bd-4164-86aa-cdd2a6dbea43"
+    },
+    {
+      "source": "topic::animal reproduction",
+      "target": "sub::topic::animal movement and locomotion::sessile animals"
+    },
+    {
+      "source": "topic::animal reproduction",
+      "target": "sub::topic::animal reproduction::asexual reproduction"
+    },
+    {
+      "source": "sub::topic::animal reproduction::asexual reproduction",
+      "target": "detail::5c101320-dc5f-4c98-ad03-b589630fbcdd"
+    },
+    {
+      "source": "topic::animal reproduction",
+      "target": "sub::topic::animal reproduction::sexual reproduction"
+    },
+    {
+      "source": "sub::topic::animal reproduction::sexual reproduction",
+      "target": "detail::b9097b5e-20ab-4697-91a0-048b1ca6ec9e"
+    },
+    {
+      "source": "topic::animal reproduction",
+      "target": "sub::topic::animal reproduction::external fertilization"
+    },
+    {
+      "source": "sub::topic::animal reproduction::external fertilization",
+      "target": "detail::8e2bfc17-5047-43a5-92f3-e35a301d8c3c"
+    },
+    {
+      "source": "sub::topic::animal reproduction::external fertilization",
+      "target": "detail::a5b02ce3-3da9-45d9-9edb-325a482b6a3b"
+    },
+    {
+      "source": "topic::animal classification",
+      "target": "sub::topic::animal classification::tissue complexity and body organization"
+    },
+    {
+      "source": "sub::topic::animal classification::tissue complexity and body organization",
+      "target": "detail::8acb6bea-9c1c-4591-808f-64256ae12914"
+    },
+    {
+      "source": "topic::animal germ layers",
+      "target": "sub::topic::animal germ layers::germ layer distribution"
+    },
+    {
+      "source": "sub::topic::animal germ layers::germ layer distribution",
+      "target": "detail::a3c7d58a-0265-4451-86a5-d93a8a1b7eeb"
+    },
+    {
+      "source": "sub::topic::animal germ layers::germ layer distribution",
+      "target": "detail::dc18767c-9b39-44b6-987b-911394a757b4"
+    },
+    {
+      "source": "topic::animal germ layers",
+      "target": "sub::topic::animal germ layers::mesoderm function"
+    },
+    {
+      "source": "sub::topic::animal germ layers::mesoderm function",
+      "target": "detail::de09e3b9-e16e-47dc-9ffa-f1a384a19e02"
+    },
+    {
+      "source": "topic::animal body systems",
+      "target": "sub::topic::animal movement and locomotion::sessile animals"
+    },
+    {
+      "source": "topic::animal body systems",
+      "target": "sub::topic::animal body systems::nervous systems"
+    },
+    {
+      "source": "sub::topic::animal body systems::nervous systems",
+      "target": "detail::fdfe9099-eb6d-486a-90a3-633c7a7ab171"
+    },
+    {
+      "source": "topic::nervous system evolution",
+      "target": "sub::topic::nervous system evolution::nerve nets in simple animals"
+    },
+    {
+      "source": "sub::topic::nervous system evolution::nerve nets in simple animals",
+      "target": "detail::988a95f3-15b2-4bdb-ae48-304bf41af009"
+    },
+    {
+      "source": "sub::topic::nervous system evolution::nerve nets in simple animals",
+      "target": "detail::9f958ec4-8b7b-4590-86b9-e2760172d696"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::key physiological systems"
+    },
+    {
+      "source": "sub::topic::animal biology::key physiological systems",
+      "target": "detail::a393f108-5e07-4739-886f-ef8bb154f112"
+    },
+    {
+      "source": "topic::gas exchange in animals",
+      "target": "sub::topic::gas exchange in animals::diffusion-based gas exchange"
+    },
+    {
+      "source": "sub::topic::gas exchange in animals::diffusion-based gas exchange",
+      "target": "detail::884880a2-b89c-4599-a01f-5cce6c55929b"
+    },
+    {
+      "source": "topic::gas exchange in animals",
+      "target": "sub::topic::gas exchange in animals::specialized circulatory systems"
+    },
+    {
+      "source": "sub::topic::gas exchange in animals::specialized circulatory systems",
+      "target": "detail::5dc8f938-9ed6-418e-9f8c-c11a63476056"
+    },
+    {
+      "source": "sub::topic::gas exchange in animals::specialized circulatory systems",
+      "target": "detail::acffdb2e-dbf6-4dcd-9582-23f6c52788e3"
+    },
+    {
+      "source": "sub::topic::digestive systems::incomplete digestive system",
+      "target": "detail::cefb758d-9fcc-479e-81b9-663fb0ad1d0f"
+    },
+    {
+      "source": "sub::topic::digestive systems::incomplete digestive system",
+      "target": "detail::c2a0a7c8-7f11-4145-8131-bc9e61299e37"
+    },
+    {
+      "source": "topic::ecological roles",
+      "target": "sub::topic::ecological roles::animal feeding types"
+    },
+    {
+      "source": "sub::topic::ecological roles::animal feeding types",
+      "target": "detail::e217428d-f73c-4ad0-ba82-a759dd6f4518"
+    },
+    {
+      "source": "topic::ecological roles",
+      "target": "sub::topic::ecological roles::ecosystem interactions"
+    },
+    {
+      "source": "sub::topic::ecological roles::ecosystem interactions",
+      "target": "detail::27fd8e2a-6585-478b-8291-28b3e61fcc6e"
+    },
+    {
+      "source": "topic::population and community ecology",
+      "target": "sub::topic::population and community ecology::predation"
+    },
+    {
+      "source": "sub::topic::population and community ecology::predation",
+      "target": "detail::dd17991a-b61d-40d7-8ace-e0781ac79774"
+    },
+    {
+      "source": "topic::population and community ecology",
+      "target": "sub::topic::population and community ecology::competition"
+    },
+    {
+      "source": "sub::topic::population and community ecology::competition",
+      "target": "detail::a64d6d01-eb19-4049-a714-163e1b1b47e4"
+    },
+    {
+      "source": "topic::population and community ecology",
+      "target": "sub::topic::population and community ecology::symbiosis"
+    },
+    {
+      "source": "sub::topic::population and community ecology::symbiosis",
+      "target": "detail::612883f9-98d5-48c8-ab9f-0e7b51cf29bc"
+    },
+    {
+      "source": "topic::evolutionary biology",
+      "target": "sub::topic::evolutionary biology::adaptive diversity"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::adaptive diversity",
+      "target": "detail::f2063850-67c9-47c1-8406-654222957c4b"
+    },
+    {
+      "source": "topic::evolutionary biology",
+      "target": "sub::topic::evolutionary biology::phylogenetics"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::phylogenetics",
+      "target": "detail::2f39c453-c358-48d3-a55f-1bbf0fe2cfbb"
+    },
+    {
+      "source": "topic::evolutionary biology",
+      "target": "sub::topic::evolutionary biology::methods of studying evolution"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::methods of studying evolution",
+      "target": "detail::fc553593-3978-4ec8-95f1-19b87f34f678"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::methods of studying evolution",
+      "target": "detail::7b9c4096-ea0f-43ef-a60d-dfb0d5fd7d46"
+    },
+    {
+      "source": "topic::evolutionary biology",
+      "target": "sub::topic::evolutionary biology::primate evolution"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::primate evolution",
+      "target": "detail::c0976114-e971-43c5-8862-fc39760ed21c"
+    },
+    {
+      "source": "topic::evolutionary biology",
+      "target": "sub::topic::evolutionary biology::arthropod evolution"
+    },
+    {
+      "source": "sub::topic::evolutionary biology::arthropod evolution",
+      "target": "detail::8baa5b02-64f1-4a05-a5ea-c534634db947"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::defining characteristics of animals"
+    },
+    {
+      "source": "sub::topic::animal biology::defining characteristics of animals",
+      "target": "detail::28399406-eac3-478a-ba7d-462568cabb49"
+    },
+    {
+      "source": "topic::animal biology",
+      "target": "sub::topic::animal biology::diversity in animals"
+    },
+    {
+      "source": "sub::topic::animal biology::diversity in animals",
+      "target": "detail::0117e462-e667-47d3-9ed1-24742f8de4a2"
+    }
+  ]
+}

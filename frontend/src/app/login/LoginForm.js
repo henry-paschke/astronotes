@@ -18,6 +18,12 @@ export default function LoginForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+
+    if (!username.trim() || !password.trim()) {
+      setError("Username and password are required.");
+      return;
+    }
+
     setLoading(true);
 
     try {
