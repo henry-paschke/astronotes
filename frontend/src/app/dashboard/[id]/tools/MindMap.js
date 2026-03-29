@@ -16,9 +16,9 @@ const LINK_STR = {
   default: 0.3,
 };
 const COLLIDE_R = { topic: 70, subtopic: 55, detail: 80 };
-const SUB_ZOOM = 0.2; // zoom level subtopics appear
-const DETAIL_ZOOM = 0.5; // zoom level details appear
-const FADE_RANGE = 0.15;
+const SUB_ZOOM = 0.08;  // zoom level subtopics appear
+const DETAIL_ZOOM = 0.2; // zoom level details appear
+const FADE_RANGE = 0.1;
 // ─────────────────────────────────────────────
 
 function wrapText(ctx, text, maxW) {
@@ -88,32 +88,41 @@ function drawNode(node, ctx, gs) {
       maxW = 160 / gs;
     ctx.font = `400 ${fs}px sans-serif`;
     const lines = wrapText(ctx, label, maxW);
-    const lh = fs * 1.4,
-      bw = maxW + pad * 2,
-      bh = lines.length * lh + pad * 1.6,
+    const lh = fs * 1.4;
+    // Reserve a full label row (fs * 1.6) at the top when a type badge is present
+    const labelRowH = node.detail_type ? fs * 1.6 : 0;
+    const bw = maxW + pad * 2,
+      bh = lines.length * lh + pad * 2 + labelRowH,
       r = 4 / gs;
     const dt = DETAIL_THEME[node.detail_type] || { bg: "#07152a", border: "#c4a35a", label: "#e8c878" };
     rect(ctx, x, y, bw, bh, r, dt.bg, dt.border, 1 / gs);
     if (node.detail_type) {
-      ctx.font = `600 ${8 / gs}px sans-serif`;
+      // Separator line between badge row and content
+      ctx.strokeStyle = dt.border;
+      ctx.globalAlpha = alpha * 0.25;
+      ctx.lineWidth = 0.5 / gs;
+      ctx.beginPath();
+      ctx.moveTo(x - bw / 2 + pad * 0.5, y - bh / 2 + labelRowH);
+      ctx.lineTo(x + bw / 2 - pad * 0.5, y - bh / 2 + labelRowH);
+      ctx.stroke();
+      ctx.globalAlpha = alpha;
+      ctx.font = `700 ${8 / gs}px sans-serif`;
       ctx.fillStyle = dt.border;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillText(
         node.detail_type[0].toUpperCase() + node.detail_type.slice(1),
         x - bw / 2 + pad,
-        y - bh / 2 + pad * 0.8,
+        y - bh / 2 + labelRowH / 2,
       );
     }
     ctx.fillStyle = dt.label;
     ctx.font = `400 ${fs}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const startY =
-      y -
-      (lines.length * lh) / 2 +
-      lh * 0.1 +
-      (node.detail_type ? fs * 0.6 : 0);
+    // Content starts below the label row + top padding
+    const contentTop = y - bh / 2 + labelRowH + pad;
+    const startY = contentTop + lh / 2;
     lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh));
   }
   ctx.restore();
@@ -391,7 +400,13 @@ export default function MindMap({ graph }) {
     }
     if (changed) {
       dataRef.current = { nodes, links };
-      setGraphData({ nodes, links });
+      // Draw details first, subtopics second, topics last so higher-level nodes
+      // always render on top in the canvas.
+      const DRAW_ORDER = { detail: 0, subtopic: 1, topic: 2 };
+      const sorted = [...nodes].sort(
+        (a, b) => (DRAW_ORDER[a.type] ?? 0) - (DRAW_ORDER[b.type] ?? 0),
+      );
+      setGraphData({ nodes: sorted, links });
     }
     return changed;
   };

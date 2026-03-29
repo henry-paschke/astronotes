@@ -3,7 +3,7 @@ import datetime
 import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from sqlmodel import Session, select
+from sqlmodel import Session, select, update
 
 from database.engine import get_session
 from database.models import Summary, Transcript, User
@@ -89,13 +89,18 @@ def generate_summary(
     if row is None:
         row = Summary(transcript_id=transcript_id, content=content)
         db.add(row)
+        db.commit()
+        db.refresh(row)
     else:
-        row.content = content
-        row.generated_at = datetime.datetime.utcnow()
-        db.add(row)
+        now = datetime.datetime.utcnow()
+        db.exec(
+            update(Summary)
+            .where(Summary.id == row.id)
+            .values(content=content, generated_at=now)
+        )
+        db.commit()
+        row = db.get(Summary, row.id)
 
-    db.commit()
-    db.refresh(row)
     return SummaryOut(
         id=row.id,
         transcript_id=row.transcript_id,

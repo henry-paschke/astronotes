@@ -266,7 +266,7 @@ class GraphStateFAISSSpaCy(GraphState):
                     self._get_embedding(self.nodes[subtopic_id]["label"]),
                     embedding,
                 )
-                if new_score > current_score + 0.05:
+                if new_score >= current_score:
                     # Add a visual cross-link without changing the authoritative parent
                     self._add_edge(topic_id, subtopic_id)
 

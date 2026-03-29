@@ -7,7 +7,17 @@ import anthropic
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlmodel import Session, select
-from database.models import Transcript, User
+from database.models import (
+    ExamQuestion,
+    ExamSet,
+    Flashcard,
+    FlashcardSet,
+    Presentation,
+    PresentationSlide,
+    Summary,
+    Transcript,
+    User,
+)
 from database.engine import get_session
 from logic.mindmap import GraphStateFAISSSpaCy
 from utilities.auth import get_current_user
@@ -132,6 +142,28 @@ def delete_transcript(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
         )
+    summary = database.exec(select(Summary).where(Summary.transcript_id == transcript_id)).first()
+    if summary:
+        database.delete(summary)
+
+    flashcard_set = database.exec(select(FlashcardSet).where(FlashcardSet.transcript_id == transcript_id)).first()
+    if flashcard_set:
+        for card in database.exec(select(Flashcard).where(Flashcard.set_id == flashcard_set.id)).all():
+            database.delete(card)
+        database.delete(flashcard_set)
+
+    presentation = database.exec(select(Presentation).where(Presentation.transcript_id == transcript_id)).first()
+    if presentation:
+        for slide in database.exec(select(PresentationSlide).where(PresentationSlide.presentation_id == presentation.id)).all():
+            database.delete(slide)
+        database.delete(presentation)
+
+    exam_set = database.exec(select(ExamSet).where(ExamSet.transcript_id == transcript_id)).first()
+    if exam_set:
+        for question in database.exec(select(ExamQuestion).where(ExamQuestion.exam_id == exam_set.id)).all():
+            database.delete(question)
+        database.delete(exam_set)
+
     database.delete(transcript)
     database.commit()
 
