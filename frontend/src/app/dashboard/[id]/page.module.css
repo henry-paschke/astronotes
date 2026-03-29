@@ -148,7 +148,7 @@
 /* ── Canvas ───────────────────────────────────────────────────────────────── */
 .canvas {
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
   background: var(--bg-deep);
   /* Subtle grid */
