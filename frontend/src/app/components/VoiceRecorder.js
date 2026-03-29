@@ -20,6 +20,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   const graphIntervalRef = useRef(null);
   const activeRef = useRef(false); // true while recording session is live
   const lastGraphSizeRef = useRef({ nodes: 0, links: 0 });
+  const restartTimerRef = useRef(null); // debounce recognition restarts
 
   // ── Flush buffered text to graph ──────────────────────────────────────────
   async function flushToGraph({ force = false } = {}) {
@@ -112,15 +113,19 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
       }
     };
 
-    // SpeechRecognition can stop on silence — restart automatically while active
+    // SpeechRecognition can stop on silence — restart automatically while active.
+    // Delay prevents Chrome's rapid start→end→start loop that silently kills recognition.
     recognition.onend = () => {
-      if (activeRef.current) {
+      if (!activeRef.current) return;
+      clearTimeout(restartTimerRef.current);
+      restartTimerRef.current = setTimeout(() => {
+        if (!activeRef.current) return;
         try {
           recognition.start();
         } catch {
-          /* already started */
+          /* recognition already restarting */
         }
-      }
+      }, 300);
     };
 
     recognition.onerror = (e) => {
@@ -143,6 +148,7 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
   // ── Stop recording ─────────────────────────────────────────────────────────
   async function stopRecording() {
     activeRef.current = false;
+    clearTimeout(restartTimerRef.current);
     clearInterval(graphIntervalRef.current);
 
     recognitionRef.current?.stop();
