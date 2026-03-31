@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { createTranscript, listTranscripts, listClasses, updateTranscript, deleteTranscript, generateTranscriptDetails } from "../api/transcript";
 import NavBar from "../components/NavBar";
 import AuthGuard from "../components/AuthGuard";
+import { Rule, PlusCircleIcon, SearchIcon, DeleteIcon, EditIcon, PlayCircleIcon, CloseIcon, FooterAstrolabe } from "../components/icons";
 
 // ─── Deterministic pseudo-random for waveform bars ────────────────────────────
 function pr(seed) {
@@ -127,10 +128,7 @@ function EditModal({ t, classes, onSave, onClose }) {
               {generating ? "Generating…" : "Generate Details"}
             </button>
             <button className={styles.modalClose} onClick={onClose} aria-label="Close" disabled={generating || saving}>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
-                <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <CloseIcon width={14} height={14} />
             </button>
           </div>
         </div>
@@ -209,10 +207,7 @@ function DeleteModal({ t, onConfirm, onClose, deleting }) {
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Delete Lecture</h2>
           <button className={styles.modalClose} onClick={onClose} aria-label="Close">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
-              <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+            <CloseIcon width={14} height={14} />
           </button>
         </div>
         <p className={styles.deleteWarning}>
@@ -263,25 +258,14 @@ function TranscriptCard({ t, onEdit, onDelete }) {
           <Waveform seed={t.id} color={color} />
           <div className={styles.cardActions}>
             <button className={styles.deleteBtn} onClick={() => onDelete(t)} aria-label="Delete">
-              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
-                <polyline points="2,4 14,4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                <path d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                <path d="M3 4l1 9a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <DeleteIcon width={12} height={12} />
             </button>
             <button className={styles.editBtn} onClick={() => onEdit(t)}>
-              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
-                <path d="M11.5 2.5 L13.5 4.5 L5 13 L2.5 13.5 L3 11 Z"
-                  stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round"/>
-                <line x1="9.5" y1="4.5" x2="11.5" y2="6.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-              </svg>
+              <EditIcon width={12} height={12} />
               Edit
             </button>
             <Link href={`/dashboard/${t.id}`} className={styles.openBtn}>
-              <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.2"/>
-                <polyline points="6,5.5 10,8 6,10.5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" strokeLinecap="round"/>
-              </svg>
+              <PlayCircleIcon width={12} height={12} />
               Open
             </Link>
           </div>
@@ -345,17 +329,7 @@ export default function TranscriptsPage() {
         <header className={styles.pageHeader}>
           <div className={styles.pageHeaderInner}>
             <div className={styles.headerText}>
-              <svg
-                viewBox="0 0 120 12"
-                className={styles.sectionRule}
-                aria-hidden="true"
-              >
-                <line x1="0" y1="6" x2="48" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
-                <circle cx="55" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
-                <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
-                <circle cx="65" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.8" />
-                <line x1="72" y1="6" x2="120" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.5" />
-              </svg>
+              <Rule className={styles.sectionRule} />
               <h1 className={styles.pageTitle}>Transcripts</h1>
               <p className={styles.pageSubtitle}>
                 {loading
@@ -368,11 +342,7 @@ export default function TranscriptsPage() {
               onClick={creating ? undefined : handleCreate}
               style={{ opacity: creating ? 0.6 : 1, cursor: creating ? "not-allowed" : "pointer" }}
             >
-              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1.4" />
-                <line x1="10" y1="6" x2="10" y2="14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                <line x1="6" y1="10" x2="14" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              </svg>
+              <PlusCircleIcon width={16} height={16} />
               {creating ? "Creating…" : "New Transcript"}
             </div>
           </div>
@@ -409,16 +379,7 @@ export default function TranscriptsPage() {
               ))}
             </div>
             <div className={styles.searchWrap}>
-              <svg
-                viewBox="0 0 16 16"
-                width="13"
-                height="13"
-                className={styles.searchIcon}
-                aria-hidden="true"
-              >
-                <circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" />
-                <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="#c4a35a" strokeWidth="1.2" opacity="0.6" strokeLinecap="round" />
-              </svg>
+              <SearchIcon width={13} height={13} className={styles.searchIcon} />
               <input
                 type="text"
                 placeholder="Search by name, summary, class…"
@@ -453,11 +414,7 @@ export default function TranscriptsPage() {
         <footer className={styles.footer}>
           <div className={styles.footerInner}>
             <div className={styles.footerBrand}>
-              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.5" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.6" />
-                <circle cx="10" cy="10" r="4.5" fill="none" stroke="#c4a35a" strokeWidth="0.6" opacity="0.4" />
-                <circle cx="10" cy="10" r="1.5" fill="#c4a35a" opacity="0.7" />
-              </svg>
+              <FooterAstrolabe />
               <span className={styles.footerBrandName}>AstroNotes</span>
             </div>
             <ul className={styles.footerLinks}>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./page.module.css";
 import { getToken, patchMe } from "../api/account";
+import { UserIcon, KeyIcon } from "../components/icons";
 
 // ── Change username card ───────────────────────────────────────────────────────
 function UsernameCard() {
@@ -54,38 +55,7 @@ function UsernameCard() {
       <div className={styles.cardInner}>
         <div className={styles.cardHead}>
           {/* Call-sign icon */}
-          <svg
-            viewBox="0 0 36 36"
-            className={styles.cardIcon}
-            aria-hidden="true"
-          >
-            <circle
-              cx="18"
-              cy="13"
-              r="6"
-              fill="none"
-              stroke="#c4a35a"
-              strokeWidth="1.2"
-              opacity="0.9"
-            />
-            <path
-              d="M6 30 Q18 22 30 30"
-              fill="none"
-              stroke="#c4a35a"
-              strokeWidth="1.2"
-              opacity="0.9"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="16"
-              fill="none"
-              stroke="#c4a35a"
-              strokeWidth="0.5"
-              opacity="0.25"
-              strokeDasharray="3 4"
-            />
-          </svg>
+          <UserIcon className={styles.cardIcon} />
           <div>
             <h2 className={styles.cardTitle}>Call Sign</h2>
             <p className={styles.cardDesc}>
@@ -191,52 +161,7 @@ function PasswordCard() {
       <div className={styles.cardInner}>
         <div className={styles.cardHead}>
           {/* Cipher key icon */}
-          <svg
-            viewBox="0 0 36 36"
-            className={styles.cardIcon}
-            aria-hidden="true"
-          >
-            <circle
-              cx="14"
-              cy="14"
-              r="7"
-              fill="none"
-              stroke="#c4a35a"
-              strokeWidth="1.2"
-              opacity="0.9"
-            />
-            <circle cx="14" cy="14" r="3" fill="#c4a35a" opacity="0.4" />
-            <line
-              x1="19"
-              y1="19"
-              x2="30"
-              y2="30"
-              stroke="#c4a35a"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              opacity="0.9"
-            />
-            <line
-              x1="26"
-              y1="26"
-              x2="26"
-              y2="30"
-              stroke="#c4a35a"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              opacity="0.7"
-            />
-            <line
-              x1="29"
-              y1="23"
-              x2="33"
-              y2="23"
-              stroke="#c4a35a"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              opacity="0.7"
-            />
-          </svg>
+          <KeyIcon className={styles.cardIcon} />
           <div>
             <h2 className={styles.cardTitle}>Cipher Key</h2>
             <p className={styles.cardDesc}>Update your account password</p>

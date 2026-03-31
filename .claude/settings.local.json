@@ -3,7 +3,8 @@
     "allow": [
       "Bash(.venv/Scripts/pip install:*)",
       "Bash(node -e \":*)",
-      "Bash(node -e \"console.log\\(require\\(''fs''\\).readFileSync\\(''c:/projects/astronotes/frontend/src/app/api/account.js'', ''utf8''\\).split\\(''\\\\n''\\)[0]\\)\")"
+      "Bash(node -e \"console.log\\(require\\(''fs''\\).readFileSync\\(''c:/projects/astronotes/frontend/src/app/api/account.js'', ''utf8''\\).split\\(''\\\\n''\\)[0]\\)\")",
+      "Bash(grep -n \"<svg\\\\|viewBox\" c:/projects/astronotes/frontend/src/app/dashboard/[id]/tools/Flashcards.js c:/projects/astronotes/frontend/src/app/dashboard/[id]/tools/Exam.js c:/projects/astronotes/frontend/src/app/dashboard/[id]/tools/PowerPoint.js c:/projects/astronotes/frontend/src/app/page.js)"
     ]
   }
 }

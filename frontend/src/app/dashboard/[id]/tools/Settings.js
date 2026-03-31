@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { updateTranscript, generateTranscriptDetails } from "@/app/api/transcript";
 import { listClasses } from "@/app/api/transcript";
 import styles from "./Settings.module.css";
+import CompassSpinner from "@/app/components/CompassSpinner";
+import { Rule, ClockIcon } from "@/app/components/icons";
 
 function accentColor(name) {
   if (!name) return "#c4a35a";
@@ -11,41 +13,6 @@ function accentColor(name) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffff;
   return PALETTE[h % PALETTE.length];
-}
-
-function CompassSpinner() {
-  return (
-    <div className={styles.compassWrap}>
-      <svg className={styles.compass} viewBox="0 0 72 72" fill="none" aria-hidden="true">
-        <g className={styles.compassRing}>
-          <circle cx="36" cy="36" r="33" stroke="#c4a35a" strokeWidth="0.8" opacity="0.25" />
-          {Array.from({ length: 24 }, (_, i) => {
-            const a = (i / 24) * Math.PI * 2;
-            const major = i % 6 === 0;
-            const r0 = major ? 29 : 30.5;
-            return (
-              <line key={i}
-                x1={36 + r0 * Math.cos(a)} y1={36 + r0 * Math.sin(a)}
-                x2={36 + 33 * Math.cos(a)} y2={36 + 33 * Math.sin(a)}
-                stroke="#c4a35a" strokeWidth={major ? 1.2 : 0.6}
-                opacity={major ? 0.7 : 0.35} strokeLinecap="round"
-              />
-            );
-          })}
-        </g>
-        <circle cx="36" cy="36" r="22" stroke="#c4a35a" strokeWidth="0.6" opacity="0.18" />
-        <circle cx="36" cy="36" r="4" stroke="#c4a35a" strokeWidth="1" opacity="0.5" />
-        <g className={styles.compassNeedle}>
-          <polygon points="36,36 33.5,36 36,14" fill="#c4a35a" opacity="0.9" />
-          <polygon points="36,36 38.5,36 36,58" fill="#c4a35a" opacity="0.3" />
-        </g>
-        <text x="36" y="9" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.55">N</text>
-        <text x="36" y="65" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35">S</text>
-        <text x="63" y="37" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35">E</text>
-        <text x="9" y="37" textAnchor="middle" dominantBaseline="middle" fontSize="6" fontFamily="serif" fill="#c4a35a" opacity="0.35">W</text>
-      </svg>
-    </div>
-  );
 }
 
 export default function Settings({ transcript, id }) {
@@ -122,13 +89,7 @@ export default function Settings({ transcript, id }) {
       {/* ── Header ── */}
       <div className={styles.header}>
         <div className={styles.headerText}>
-          <svg viewBox="0 0 120 12" className={styles.rule} aria-hidden="true">
-            <line x1="0" y1="6" x2="48" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.4" />
-            <circle cx="55" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.7" />
-            <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.8" />
-            <circle cx="65" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.7" />
-            <line x1="72" y1="6" x2="120" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.4" />
-          </svg>
+          <Rule className={styles.rule} />
           <h2 className={styles.title}>Settings</h2>
           <p className={styles.meta}>Edit lecture details</p>
         </div>
@@ -138,10 +99,7 @@ export default function Settings({ transcript, id }) {
               <><span className={styles.spinner} aria-hidden="true" /> Generating&hellip;</>
             ) : (
               <>
-                <svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true">
-                  <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <ClockIcon width={13} height={13} />
                 Generate Details
               </>
             )}
@@ -152,7 +110,7 @@ export default function Settings({ transcript, id }) {
       {error && <p className={styles.error}>{error}</p>}
 
       {generating ? (
-        <CompassSpinner />
+        <CompassSpinner wrapClassName={styles.compassWrap} svgClassName={styles.compass} />
       ) : (
         <div className={styles.form}>
           {/* Name */}

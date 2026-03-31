@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./NavBar.module.css";
 import { getMe } from "../api/account";
+import { LogoMark } from "./icons";
 
 export default function NavBar({ showFeatureLinks = false }) {
   const router = useRouter();
@@ -45,58 +46,7 @@ export default function NavBar({ showFeatureLinks = false }) {
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.navLogo}>
-        <svg
-          viewBox="0 0 28 28"
-          className={styles.navLogoMark}
-          aria-hidden="true"
-        >
-          <circle
-            cx="14"
-            cy="14"
-            r="12"
-            fill="none"
-            stroke="#c4a35a"
-            strokeWidth="1.2"
-            strokeDasharray="60 15.4"
-            style={{
-              transformOrigin: "14px 14px",
-              animation: "rotateSlow 18s linear infinite",
-            }}
-          />
-          <circle
-            cx="14"
-            cy="14"
-            r="7"
-            fill="none"
-            stroke="#c4a35a"
-            strokeWidth="0.7"
-            opacity="0.6"
-            strokeDasharray="36 8"
-            style={{
-              transformOrigin: "14px 14px",
-              animation: "rotateReverse 12s linear infinite",
-            }}
-          />
-          <line
-            x1="14"
-            y1="2"
-            x2="14"
-            y2="26"
-            stroke="#c4a35a"
-            strokeWidth="0.7"
-            opacity="0.45"
-          />
-          <line
-            x1="2"
-            y1="14"
-            x2="26"
-            y2="14"
-            stroke="#c4a35a"
-            strokeWidth="0.7"
-            opacity="0.45"
-          />
-          <circle cx="14" cy="14" r="2" fill="#e8c878" />
-        </svg>
+        <LogoMark className={styles.navLogoMark} />
         <span className={styles.navLogoText}>AstroNotes</span>
       </Link>
 

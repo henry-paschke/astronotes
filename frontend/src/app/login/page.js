@@ -1,6 +1,7 @@
 import styles from '../auth.module.css';
 import LoginForm from './LoginForm';
 import NavBar from '../components/NavBar';
+import { AstrolabeMark, AuthRule } from '../components/icons';
 
 // Sparse star field for auth pages (fewer stars, more atmospheric)
 function pr(seed) {
@@ -50,28 +51,8 @@ export default function LoginPage() {
           <div className={styles.cardInner}>
 
             {/* Mini astrolabe mark */}
-            <svg viewBox="0 0 56 56" className={styles.astrolabeMark} aria-hidden="true">
-              <circle cx="28" cy="28" r="25" fill="none" stroke="#c4a35a" strokeWidth="1"
-                strokeDasharray="60 15" opacity="0.6"
-                style={{ transformOrigin: '28px 28px', animation: 'rotateSlow 18s linear infinite' }}
-              />
-              <circle cx="28" cy="28" r="16" fill="none" stroke="#c4a35a" strokeWidth="0.7"
-                strokeDasharray="30 8" opacity="0.45"
-                style={{ transformOrigin: '28px 28px', animation: 'rotateReverse 12s linear infinite' }}
-              />
-              <line x1="28" y1="3" x2="28" y2="53" stroke="#c4a35a" strokeWidth="0.5" opacity="0.3" />
-              <line x1="3" y1="28" x2="53" y2="28" stroke="#c4a35a" strokeWidth="0.5" opacity="0.3" />
-              <circle cx="28" cy="28" r="3.5" fill="#c4a35a" opacity="0.7" />
-              <circle cx="28" cy="28" r="1.5" fill="#e8c878" />
-            </svg>
-
-            <svg viewBox="0 0 80 10" className={styles.rule} aria-hidden="true">
-              <line x1="0" y1="5" x2="32" y2="5" stroke="#c4a35a" strokeWidth="0.7" opacity="0.4" />
-              <circle cx="38" cy="5" r="2.5" fill="none" stroke="#c4a35a" strokeWidth="0.8" opacity="0.7" />
-              <circle cx="40" cy="5" r="1.2" fill="#c4a35a" opacity="0.85" />
-              <circle cx="42" cy="5" r="2.5" fill="none" stroke="#c4a35a" strokeWidth="0.8" opacity="0.7" />
-              <line x1="48" y1="5" x2="80" y2="5" stroke="#c4a35a" strokeWidth="0.7" opacity="0.4" />
-            </svg>
+            <AstrolabeMark className={styles.astrolabeMark} />
+            <AuthRule className={styles.rule} />
 
             <h1 className={styles.cardTitle}>Sign In</h1>
             <p className={styles.cardSub}>Return to your observatory</p>

@@ -2,6 +2,7 @@ import styles from './page.module.css';
 import NavBar from '../components/NavBar';
 import AuthGuard from '../components/AuthGuard';
 import AccountSettings from './AccountForm';
+import { Rule } from '../components/icons';
 
 export const metadata = {
   title: 'Account — AstroNotes',
@@ -34,13 +35,7 @@ export default function AccountPage() {
         <main className={styles.main}>
           {/* Page heading */}
           <header className={styles.pageHeader}>
-            <svg viewBox="0 0 120 12" className={styles.rule} aria-hidden="true">
-              <line x1="0" y1="6" x2="48" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.4" />
-              <circle cx="55" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.7" />
-              <circle cx="60" cy="6" r="1.5" fill="#c4a35a" opacity="0.9" />
-              <circle cx="65" cy="6" r="3" fill="none" stroke="#c4a35a" strokeWidth="1" opacity="0.7" />
-              <line x1="72" y1="6" x2="120" y2="6" stroke="#c4a35a" strokeWidth="0.8" opacity="0.4" />
-            </svg>
+            <Rule className={styles.rule} />
             <h1 className={styles.pageTitle}>Navigator&rsquo;s Record</h1>
             <p className={styles.pageSubtitle}>Manage your account details</p>
           </header>

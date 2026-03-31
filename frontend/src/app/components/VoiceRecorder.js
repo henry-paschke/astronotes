@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { deinitializeRedis, initializeRedis } from "../api/dashboard";
 import { updateGraph } from "../api/mindmap";
 import styles from "./VoiceRecorder.module.css";
+import { MicIcon, SpinnerCircleIcon } from "./icons";
 
 const MIN_GRAPH_WORDS = 16;
 const GRAPH_INTERVAL_MS = 10_000;
@@ -219,69 +220,14 @@ export default function VoiceRecorder({ id, setTranscript, setTextStream }) {
           onClick={isRecording ? stopRecording : startRecording}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-            className={styles.icon}
-          >
-            <rect
-              x="9"
-              y="2"
-              width="6"
-              height="11"
-              rx="3"
-              fill="currentColor"
-            />
-            <path
-              d="M5 10a7 7 0 0 0 14 0"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <line
-              x1="12"
-              y1="17"
-              x2="12"
-              y2="21"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-            <line
-              x1="8"
-              y1="21"
-              x2="16"
-              y2="21"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
+          <MicIcon className={styles.icon} />
         </button>
       </div>
 
       <div className={styles.status}>
         {graphStatus === "updating" ? (
           <span className={styles.updating}>
-            <svg
-              className={styles.spinner}
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-            >
-              <circle
-                cx="8"
-                cy="8"
-                r="5.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeDasharray="20"
-                strokeDashoffset="8"
-                strokeLinecap="round"
-              />
-            </svg>
+            <SpinnerCircleIcon className={styles.spinner} />
             Mapping
           </span>
         ) : isRecording ? (
