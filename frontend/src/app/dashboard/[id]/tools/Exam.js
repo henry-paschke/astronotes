@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { getExam, generateExam } from "@/app/api/exam";
 import styles from "./Exam.module.css";
 import CompassSpinner from "@/app/components/CompassSpinner";
 import { Rule, RegenerateIcon, ChevronRightIcon, ExamEmptyIllustration } from "@/app/components/icons";
+import { useToolData, formatGenerated } from "@/app/hooks/useToolData";
 
 function parseCorrect(q) {
   if (q.type === "true_false") return new Set([q.correct_answer]);
@@ -96,37 +97,16 @@ function scoreExam(questions, answers) {
 
 export default function Exam({ id }) {
   const topRef = useRef(null);
-  const [exam, setExam] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState(null);
+  const { data: exam, loading, generating, error, generate } = useToolData(getExam, generateExam, id);
   const [phase, setPhase] = useState("landing");
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(null);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getExam(id)
-      .then((data) => setExam(data))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  async function handleGenerate() {
-    setGenerating(true);
-    setError(null);
+  function handleGenerate() {
     setPhase("landing");
     setAnswers({});
     setScore(null);
-    try {
-      const data = await generateExam(id);
-      setExam(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGenerating(false);
-    }
+    generate();
   }
 
   function handleStart() {
@@ -156,15 +136,7 @@ export default function Exam({ id }) {
     setPhase("taking");
   }
 
-  const generatedAt = exam?.generated_at
-    ? new Date(exam.generated_at).toLocaleString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : null;
+  const generatedAt = formatGenerated(exam?.generated_at);
 
   // ── Taking ────────────────────────────────────────────────────────────────
   if (phase === "taking" && exam) {

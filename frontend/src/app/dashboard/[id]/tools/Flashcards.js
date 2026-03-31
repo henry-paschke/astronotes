@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getFlashcards, generateFlashcards } from "@/app/api/flashcards";
 import styles from "./Flashcards.module.css";
 import CompassSpinner from "@/app/components/CompassSpinner";
 import { Rule, RegenerateIcon, ChevronLeftIcon, ChevronRightIcon, ShuffleIcon, PlayCircleIcon, FlashcardsEmptyIllustration } from "@/app/components/icons";
+import { useToolData, formatGenerated } from "@/app/hooks/useToolData";
 
 function shuffle(arr) {
   const a = [...arr];
@@ -114,41 +115,14 @@ function QuizMode({ cards, onExit }) {
 }
 
 export default function Flashcards({ id }) {
-  const [set, setSet] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState(null);
+  const { data: set, loading, generating, error, generate } = useToolData(getFlashcards, generateFlashcards, id);
   const [mode, setMode] = useState("browse"); // "browse" | "quiz"
+  const generatedAt = formatGenerated(set?.generated_at);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getFlashcards(id)
-      .then(data => setSet(data))
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  async function handleGenerate() {
-    setGenerating(true);
-    setError(null);
+  function handleGenerate() {
     setMode("browse");
-    try {
-      const data = await generateFlashcards(id);
-      setSet(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGenerating(false);
-    }
+    generate();
   }
-
-  const generatedAt = set?.generated_at
-    ? new Date(set.generated_at).toLocaleString("en-GB", {
-        day: "numeric", month: "short", year: "numeric",
-        hour: "2-digit", minute: "2-digit",
-      })
-    : null;
 
   if (mode === "quiz" && set) {
     return <QuizMode cards={set.cards} onExit={() => setMode("browse")} />;

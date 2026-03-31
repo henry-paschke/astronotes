@@ -1,46 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { getSummary, generateSummary } from "@/app/api/summary";
 import styles from "./Summary.module.css";
 import CompassSpinner from "@/app/components/CompassSpinner";
 import { Rule, RegenerateIcon, SummaryEmptyIllustration } from "@/app/components/icons";
+import { useToolData, formatGenerated } from "@/app/hooks/useToolData";
 
 export default function Summary({ id }) {
-  const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getSummary(id)
-      .then((data) => setSummary(data))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  async function handleGenerate() {
-    setGenerating(true);
-    setError(null);
-    try {
-      const data = await generateSummary(id);
-      setSummary(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  const generatedAt = summary?.generated_at
-    ? new Date(summary.generated_at).toLocaleString("en-GB", {
-        day: "numeric", month: "short", year: "numeric",
-        hour: "2-digit", minute: "2-digit",
-      })
-    : null;
+  const { data: summary, loading, generating, error, generate } = useToolData(getSummary, generateSummary, id);
+  const generatedAt = formatGenerated(summary?.generated_at);
 
   return (
     <div className={styles.wrap}>
@@ -54,7 +23,7 @@ export default function Summary({ id }) {
         </div>
         <button
           className={styles.generateBtn}
-          onClick={handleGenerate}
+          onClick={generate}
           disabled={generating || loading}
         >
           {generating ? (

@@ -6,6 +6,7 @@ import { getPresentation, generatePresentation } from "@/app/api/presentation";
 import styles from "./Presentation.module.css";
 import CompassSpinner from "@/app/components/CompassSpinner";
 import { Rule, RegenerateIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon, PresentScreenIcon, PresentationEmptyIllustration } from "@/app/components/icons";
+import { useToolData, formatGenerated } from "@/app/hooks/useToolData";
 
 // ── Slide content renderer ────────────────────────────────────────────────────
 function SlideContent({ slide }) {
@@ -110,42 +111,15 @@ function SlideThumbnail({ slide, index, active, onClick }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function PowerPoint({ id }) {
-  const [pres, setPres] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState(null);
+  const { data: pres, loading, generating, error, generate } = useToolData(getPresentation, generatePresentation, id);
   const [presenting, setPresenting] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const generatedAt = formatGenerated(pres?.generated_at);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    getPresentation(id)
-      .then(data => setPres(data))
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  async function handleGenerate() {
-    setGenerating(true);
-    setError(null);
+  function handleGenerate() {
     setActiveSlide(0);
-    try {
-      const data = await generatePresentation(id);
-      setPres(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGenerating(false);
-    }
+    generate();
   }
-
-  const generatedAt = pres?.generated_at
-    ? new Date(pres.generated_at).toLocaleString("en-GB", {
-        day: "numeric", month: "short", year: "numeric",
-        hour: "2-digit", minute: "2-digit",
-      })
-    : null;
 
   if (presenting && pres) {
     return <PresentMode slides={pres.slides} onExit={() => setPresenting(false)} />;
