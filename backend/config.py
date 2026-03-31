@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+env = os.getenv("APP_ENV", "development")
+load_dotenv(f".env.{env}")
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]

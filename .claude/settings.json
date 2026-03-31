@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(node -e \"const fs = require\\(''fs''\\); console.log\\(JSON.stringify\\(fs.readFileSync\\(''c:/projects/astronotes/frontend/src/app/api/account.js'', ''utf8''\\).split\\(''\\\\n''\\)[0]\\)\\);\")",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(ls c:/projects/astronotes/frontend/src/app/components/*.js)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''scripts'''',{}\\), indent=2\\)\\)\")",
+      "Bash(ls c:/projects/astronotes/backend/*.py)",
+      "Bash(python3 -c \"import uvicorn\")"
+    ],
+    "additionalDirectories": [
+      "c:\\projects\\astronotes\\frontend\\src\\app\\dashboard\\[id]"
     ]
   }
 }
